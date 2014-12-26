@@ -1,0 +1,10 @@
+#files or directories to ignore
+
+.DS_Store
+db.json
+debug.log
+
+.idea/
+node_modules/
+public/
+.deploy/

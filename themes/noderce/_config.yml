@@ -1,0 +1,14 @@
+menu:
+  Archives: /hexo-blog/archives
+  # About: /hexo-blog/about
+
+excerpt_link: Read More ›
+
+google_analytics: 
+
+rss: 
+
+comment_provider: duoshuo
+# Duoshuo comment
+duoshuo:
+  short_name: talent
