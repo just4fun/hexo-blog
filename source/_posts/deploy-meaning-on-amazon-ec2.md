@@ -2,7 +2,9 @@ title: Deploy meaning on Amazon EC2
 date: 2015-01-04 22:02:47
 tags: 
 - ec2
+- transmit
 - nginx
+- mongodb
 
 ---
 
@@ -43,11 +45,11 @@ Try command below to test whether the PEM file works:
 $ ssh -i ~/.ssh/just4fun.pem root@your_amazon_server
 ```
 
-When we connect our server successfully, we should create a directory which contains the released files and  will be hosted via a web server:
+When we connect our server successfully, we should create a virtual host which will contains the released files:
 ```
 $ mkdir /var/www/just4fun
 ```
-Then copy directories and files to the directory which we created just now:
+Then copy directories and files to the virtual host which we created just now:
 ```
 /dist/client
 /dist/server
@@ -57,6 +59,14 @@ Tap commnd below to install the node dependencies:
 ```
 npm install -production
 ```
+At last we get directory structure like below:
+```
+/var/www/just4fun
+  --client
+  --server
+  --package.json
+  --node_modules
+```
 
 ### DB
 
@@ -65,3 +75,43 @@ We use [MongoDB](http://www.mongodb.org/) in meaning and there is a [post](http:
 ### Web Server
 
 I previously use [Apache](http://httpd.apache.org/), and I changed it to [nginx](http://wiki.nginx.org/Main) now.
+In order to install Nginx we execute:
+```
+$ apt-get install nginx
+```
+Then create a virtual host configuration file in /etc/nginx/sites-available, such as `/etc/nginx/sites-available/just4fun`.
+```
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server ipv6only=on;
+	root /var/www/just4fun/client;
+	index index.html index.htm;
+
+	# Make site accessible from http://localhost/
+	server_name talent-is.me;
+
+	location / {
+		# First attempt to serve request as file, then
+		# as directory, then fall back to displaying a 404.
+		rewrite ^/admin/?$ /admin/admin-index.html break;
+		rewrite ^/login/?$ /admin/admin-login.html break;
+		try_files $uri $uri/ =404;
+		# Uncomment to enable naxsi on this location
+		# include /etc/nginx/naxsi.rules
+	}
+}
+```
+Next, we should disable the default vhost:
+```
+rm /etc/nginx/sites-enabled/default
+```
+And enable our virtual host:
+```
+ln -s /etc/nginx/sites-available/just4fun /etc/nginx/sites-enabled/just4fun
+```
+At last, restart nginx with new configuration:
+```
+service nginx restart
+```
+
+That's all. :)
