@@ -9,16 +9,17 @@ tags:
 [Ember.js](http://emberjs.com/) has been used in our application, and this week, I picked up a task to render a list, which seems very simple.
 
 <!-- more -->
-
+{% raw %}
 ```
 <div class="settings-section">
-  \{\{each organization in organizations\}\}
+  {{each organization in organizations}}
   <div class="settings-section__organization">
   ...
   </div>
-  {{/each}\}
+  {{/each}}
 </div>
 ```
+{% endraw %}
 
 As you know, Ember use [Handlebars](http://handlebarsjs.com/) to render. For visual design, the first item has no `margin-top`, and the last item has no `border-bottom`.
 
@@ -44,7 +45,6 @@ However, it **DOESN'T** work.
   </div>
   <script id="metamorph-16-start" type="text/x-placeholder">
   <script id="metamorph-23-start" type="text/x-placeholder">
-  {{/each}\}
 </div>
 ```
 As the rendered template, Handlebars inserted marker elements into DOM, as known as `metamorph`.
