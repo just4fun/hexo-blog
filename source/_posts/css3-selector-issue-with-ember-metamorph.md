@@ -92,3 +92,20 @@ One thing to keep in mind is that from Ember 1.8.0, there is a change log,
 > *Remove metamorph in favor of morph package (removes the need for script tags in the DOM).*
 
 Which means we will finally get rid of all those metamorph tags in the DOM. At that time, we can just remove the CSS hacks required to do child-based styling in favor of using native CSS selectors and pseudo selectors.
+
+### Updated few days later
+
+However, there is another approach which we can bypass the last-child issue.
+```
+.settings-section__organization {
+  margin-top: 0;
+}
+
+.settings-section__organization ~ .settings-section__organization {
+  margin-top: 10px;
+  border-top: 1px solid grey;
+}
+```
+As above, we can simply add `border-top` to each item except the first one, instead of adding `border-bottom` to each item except the last one.
+
+Does it also likes a hack, huh?
