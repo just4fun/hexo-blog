@@ -1,4 +1,4 @@
-title: How Router of Single Aage Ppplication works
+title: How Router of Single Page Application works
 date: 2015-02-08 17:04:39
 tags:
 - spa
