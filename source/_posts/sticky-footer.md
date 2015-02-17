@@ -16,8 +16,8 @@ However, the code on the site above only apply to the specific structure:
 
 ```
 <div id="wrap">
-    <div id="main">
-    </div>
+  <div id="main">
+  </div>
 </div>
 <div id="footer">
 </div>
@@ -25,10 +25,10 @@ However, the code on the site above only apply to the specific structure:
 or
 ```
 <div id="wrap">
-    <div id="header">
-    </div>
-    <div id="main">
-    </div>
+  <div id="header">
+  </div>
+  <div id="main">
+  </div>
 </div>
 <div id="footer">
 </div>
@@ -40,8 +40,8 @@ And the structure of this blog like below:
 <div id="header">
 </div>
 <div id="wrap">
-    <div id="main">
-    </div>
+  <div id="main">
+  </div>
 </div>
 <div id="footer">
 </div>
@@ -55,18 +55,18 @@ For example, we can just use few code below to implement sticky footer for this 
 
 ```
 html {
-    position: relative;
-    min-height: 100%;
+  position: relative;
+  min-height: 100%;
 }
 
 #main {
-     padding-bottom: 75px;
+  padding-bottom: 75px;
 }
 
 footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 ```
 It look likes cool now?

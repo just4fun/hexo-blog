@@ -14,8 +14,8 @@ It seems that the two selectors are similar in some situations, but there is exa
 
 ```
 <section>
-   <p>Little</p>
-   <p>Piggy</p>    <!-- Want this one -->
+  <p>Little</p>
+  <p>Piggy</p>    <!-- Want this one -->
 </section>
 ```
 
@@ -33,9 +33,9 @@ Let's see another example:
 
 ```
 <section>
-   <h1>Words</h1>
-   <p>Little</p>
-   <p>Piggy</p>    <!-- Want this one -->
+  <h1>Words</h1>
+  <p>Little</p>
+  <p>Piggy</p>    <!-- Want this one -->
 </section>
 ```
 
@@ -50,16 +50,16 @@ Besides, there is another situation which I want to use :nth-child and :nth-of-t
 
 ```
 <ul>
-	<li>odd</li>
-	<li></li>
-	<li>odd</li>
-	<li>
-		<ul>
-			<li></li>
-			<li>odd</li>
-			<li></li>
-		</ul>
-	</li>
+  <li>odd</li>
+  <li></li>
+  <li>odd</li>
+  <li>
+    <ul>
+      <li></li>
+      <li>odd</li>
+      <li></li>
+    </ul>
+  </li>
 </ul>
 ```
 We want to change the color of these 'odd' elements, which will render the parent 'ul' as a row stripping tree, so we set `li:nth-child(odd)` and `li:nth-of-type(odd)` to it.
