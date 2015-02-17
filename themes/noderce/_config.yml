@@ -8,7 +8,7 @@ google_analytics:
 
 rss: 
 
-comment_provider: duoshuo
+# comment_provider: duoshuo
 # Duoshuo comment
-duoshuo:
-  short_name: talent
+# duoshuo:
+#  short_name: talent
