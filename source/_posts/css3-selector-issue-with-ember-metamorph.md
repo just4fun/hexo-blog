@@ -30,7 +30,7 @@ As you know, Ember use [Handlebars](http://handlebarsjs.com/) to render. For vis
   &:first-child {
     margin-top: 0;
   }
-  &:first-child {
+  &:last-child {
     border-bottom: none;
   }
 }
