@@ -30,7 +30,7 @@ In Ember,
 ```javascript
 // use hash fragment
 App.Router.reopen({location: 'hash'});
-// use History APIIt
+// use History API
 App.Router.reopen({location: 'history'});
 // automatic detection
 App.Router.reopen({location: 'auto'});
