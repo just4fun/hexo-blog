@@ -24,6 +24,7 @@ $ git stash apply --index           # apply stored stash and reapply the staged 
 $ git stash pop                     # apply stored stash and drop it from stack immediately
 $
 $ git stash drop                    # drop stash from stack
+$ git stash clear                   # clear all stashes from stack
 $
 $ git revert HEAD                   # record a new commit to revert last commit
 $ git revert <commit>               # record a new commit to revert specific commit
