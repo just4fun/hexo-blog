@@ -85,6 +85,6 @@ exclude_generator:
 # Deployment
 ## Docs: http://hexo.io/docs/deployment.html
 deploy:
-  type: github
-  repo: https://github.com/just4fun/hexo-blog.git
+  type: git
+  repo: git@github.com:just4fun/hexo-blog.git
   branch: gh-pages
