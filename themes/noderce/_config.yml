@@ -3,12 +3,3 @@ menu:
   Feed: /hexo-blog/atom.xml
 
 excerpt_link: Read More ›
-
-google_analytics: UA-59840825-1
-
-rss: 
-
-# comment_provider: duoshuo
-# Duoshuo comment
-# duoshuo:
-#  short_name: talent
