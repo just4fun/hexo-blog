@@ -68,7 +68,7 @@ What is more, I think we should compare Flux with **MVVM**, not MVC, because som
 - ajax calls should come from Action
 - distinguish between view triggered actions and server/API triggered actions
 - distinguish between **stateful** Controller-Views and **stateless** Views
-- **Immutable** data (I haven't take a look yet)
+- **Immutable** data (See my another [post](http://just4fun.github.io/hexo-blog/2015/07/18/use-immutable-js-in-react-application/))
 
 ## Demo
 

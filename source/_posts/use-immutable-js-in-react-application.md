@@ -122,9 +122,15 @@ As [React doc](https://facebook.github.io/react/docs/pure-render-mixin.html) men
 
 Immutable data structures provides you a cheap and less verbose way to track changes on objects, which is all we need to implement `shouldComponentUpdate`. Therefore, if we model props and state attributes using the abstractions provided by immutable-js we'll be able to use `PureRenderMixin` and get a nice boost in perf. See code [here](https://github.com/just4fun/classics/commit/ce3474f2b6d40a6a5c6e1e1b3d56681f5ca2b95f).
 
-Run our App again, and like a book, then check the Chrome console.
+Run our App again, and like the first book, then check the Chrome console.
 <div style='text-align: center;'>
 ![](/hexo-blog/img/re-render-monitor-immutable-like.jpg)
 </div>
 
 As we expected, only the liked book has been re-rendered. That's what Immutable-js do for us.
+
+## References
+
+- https://facebook.github.io/react/docs/advanced-performance.html
+- https://facebook.github.io/react/docs/pure-render-mixin.html
+- http://calendar.perfplanet.com/2013/diff/
