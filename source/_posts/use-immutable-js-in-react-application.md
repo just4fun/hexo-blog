@@ -37,7 +37,7 @@ shouldComponentUpdate: function(nextProps, nextState) {
 }
 ```
 
-We could even generalize an implementation based on shallow equality (cause React will invoke this function pretty often, so the implementation has to be fast) and mix it into components. In fact, React already provides such implementation: [PureRenderMixin](https://facebook.github.io/react/docs/pure-render-mixin.html).
+We could even generalize an implementation based on shallow equality (cause React will invoke this function pretty **OFTEN**, so the implementation has to be **FAST**) and mix it into components. In fact, React already provides such implementation: [PureRenderMixin](https://facebook.github.io/react/docs/pure-render-mixin.html).
 
 ## Issue
 
@@ -114,7 +114,7 @@ Everything seems OK. However, it may bring another issue.
 ---
 > *complex data structures*
 
-As [React doc](https://facebook.github.io/react/docs/pure-render-mixin.html) mentioned, `PureRenderMixin` only shallowly compares the objects. If these contain complex data structures, it may produce false-negatives for deeper differences, which will cause re-render even everything between two objects are same.
+As [React doc](https://facebook.github.io/react/docs/pure-render-mixin.html) mentioned, `PureRenderMixin` only **SHALLOWLY** compares the objects. If these contain complex data structures, it may produce false-negatives for deeper differences, which will cause re-render even everything between two objects are same.
 
 ## Real solution
 
