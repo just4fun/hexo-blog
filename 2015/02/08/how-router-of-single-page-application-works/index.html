@@ -1,0 +1,165 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>just4fun › How Router of Single Page Application works</title>
+  <meta name="author" content="talent">
+  
+  <meta name="description" content="In some javascript frameworks (Backbone, Ember, Angular, etc.), there is Router, which provide us ability to manage states in our applications.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="How Router of Single Page Application works"/>
+  <meta property="og:site_name" content="just4fun"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/hexo-blog/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link rel="alternate" href="/hexo-blog/atom.xml" title="just4fun" type="application/atom+xml">
+  <link rel="stylesheet" href="/hexo-blog/css/style.css" media="screen" type="text/css">
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59840825-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+
+<body>
+  <header id="header"><div class="meta inner">
+  <h1><a href="/hexo-blog/">just4fun</a></h1>
+  <h2><a href="/hexo-blog/"></a></h2>
+  <nav id="main-nav">
+    <ul>
+      
+      <li><a href="/hexo-blog/archives">Archives</a></li>
+      
+      <li><a href="/hexo-blog/links">Links</a></li>
+      
+      <li><a href="/hexo-blog/atom.xml">Feed</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">How Router of Single Page Application works</h1>
+  
+
+      
+      <time datetime="2015-02-08T09:04:39.000Z">Feb 8 2015</time>
+      
+    </header>
+    <div class="entry">
+      
+        <p>In some javascript frameworks (<a href="http://backbonejs.org/" target="_blank" rel="external">Backbone</a>, <a href="http://emberjs.com/" target="_blank" rel="external">Ember</a>, <a href="https://angularjs.org/" target="_blank" rel="external">Angular</a>, etc.), there is <code>Router</code>, which provide us ability to manage states in our applications.</p>
+<a id="more"></a>
+<p>Generally, there are two ways to manage url. One is <strong>hash</strong>, which relies upon the <code>hashchange</code> event existing in the browser. The other is <strong>history</strong>, which relies upon the browser’s <code>history</code> API.</p>
+<hr>
+<p>To bootstrap router, we should have some config first.</p>
+<p>In Backbone,</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use hash fragment</span></span><br><span class="line">Backbone.history.start();</span><br><span class="line"><span class="comment">// use History API</span></span><br><span class="line">Backbone.history.start(&#123;pushState: <span class="literal">true</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>In Ember,<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use hash fragment</span></span><br><span class="line">App.Router.reopen(&#123;location: <span class="string">'hash'</span>&#125;);</span><br><span class="line"><span class="comment">// use History API</span></span><br><span class="line">App.Router.reopen(&#123;location: <span class="string">'history'</span>&#125;);</span><br><span class="line"><span class="comment">// automatic detection</span></span><br><span class="line">App.Router.reopen(&#123;location: <span class="string">'auto'</span>&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>In Angular,<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use hash fragment</span></span><br><span class="line">$locationProvider.html5Mode(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// use History API</span></span><br><span class="line">$locationProvider.html5Mode(<span class="literal">true</span>);</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>As we know, when we use <code>hash</code>, the url behind <code>#</code> will not be sent to server. So we can simply add <code>hashchange</code> event to listen url change (in essence, it’s hash change).<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.onhashchange = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (location.hash == <span class="string">'#about'</span>) &#123;</span><br><span class="line">    <span class="comment">// do stuff here</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>These frameworks have already wraped this default configuration for us, we just follow their own router way to config.</p>
+<hr>
+<p>But for <code>history</code>, how it works? It relies upon <code>pushState</code> and <code>replaceState</code>.</p>
+<p>When we click <code>&lt;a&gt;</code> tag to another link, we should do some works,</p>
+<ul>
+<li>prevent default behaviour</li>
+<li>get the url which we want to link to</li>
+<li>use pushState or replaceState to change the url without any refresh</li>
+</ul>
+<p>For Ember and Angular, this is built-in support. So we should implement this by ourself in Backbone application.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="built_in">document</span>).on(<span class="string">"a"</span>, <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> href = $(<span class="keyword">this</span>).attr(<span class="string">"href"</span>);</span><br><span class="line">  <span class="keyword">var</span> protocol = <span class="keyword">this</span>.protocol + <span class="string">"//"</span>;</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (href.slice(protocol.length) !== protocol) &#123;</span><br><span class="line">    e.preventDefault();</span><br><span class="line">    Backbone.history.navigate(href, <span class="literal">true</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>One thing to <strong>NOTE</strong> is that, if we use <code>history</code> API, it’s must be supported in our server side. Otherwise, we will get 404 page when we refresh.</p>
+
+      
+    </div>
+    
+    <footer>
+      <div class="alignleft">
+      
+      
+  
+  <div class="tags">
+    <a href="/hexo-blog/tags/pushstate/">pushstate</a>, <a href="/hexo-blog/tags/router/">router</a>, <a href="/hexo-blog/tags/spa/">spa</a>
+  </div>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+    
+  </div>
+</article>
+
+
+<section id="comment">
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer"><div class="inner"><div class="alignleft">
+  <p>
+  
+    &copy; 2015 talent
+  
+  </p>
+  <p>
+    <a href="http://github.com/willerce/hexo-theme-noderce">Noderce</a> Theme By <a href="http://willerce.com" >willerce</a>
+  </p>
+
+</div>
+<div class="clearfix"></div>
+
+<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<span id="busuanzi_container_site_pv">
+  This site has been visited <strong><span id="busuanzi_value_site_pv"></span></strong> times,
+</span>
+<span id="busuanzi_container_site_uv">
+  and there has been a total of <strong><span id="busuanzi_value_site_uv"></span></strong> guests.
+</span>
+</div></footer>
+  <script type="text/javascript">
+
+var disqus_shortname = 'talent';
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[just4fun]]></title>
+  
+  <link href="/hexo-blog/atom.xml" rel="self"/>
+  <link href="http://just4fun.github.io/hexo-blog/"/>
+  <updated>2015-09-04T12:07:16.000Z</updated>
+  <id>http://just4fun.github.io/hexo-blog/</id>
+  
+  <author>
+    <name><![CDATA[talent]]></name>
+    <email><![CDATA[houritsunohikari@gmail.com]]></email>
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Use immutable.js in React Application]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2015/07/18/use-immutable-js-in-react-application/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/07/18/use-immutable-js-in-react-application/</id>
+    <published>2015-07-18T02:38:24.000Z</published>
+    <updated>2015-09-04T12:07:16.000Z</updated>
+    <content type="html"><![CDATA[<p>In <a href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/">previous article</a>, we got a general understanding about Flux architecture. And in <a href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/#Best_Practise">Best Practise</a> section, I have mentioned <code>Immutable data</code> which I haven’t take a look yet. Now it’s time to dig into it.</p>
+<a id="more"></a>
+<h2 id="Preliminaries">Preliminaries</h2><p>If you have experience writing websites with React, you should know React makes use of a <code>virtual DOM</code>, which is a descriptor of a DOM subtree rendered in the browser. It is important to understand that the result of render is not an actual DOM node. Those are just lightweight JavaScript objects. That’s virtual DOM.</p>
+<p>When <code>setState</code> is called, the component rebuilds the virtual DOM for its children. If you call <code>setState</code> on the root element, then the entire React App is re-rendered. All the components, even if they didn’t change, will have their render method called. This may sound scary and inefficient but in practice, this works fine because we’re not touching the actual DOM.</p>
+<p>DOM operations are very expensive because modifying the DOM will also apply and calculate CSS styles, layouts. The saved time from unnecessary DOM modification can be longer than the time spent diffing the virtual DOM. This is the secret of React’s virtual DOM.</p>
+<p>However, the idea of re-rendering an entire subtree of components in response to every state change makes people wonder whether this process negatively impacts performance. That being said, if you want to get a considerable performance boost, you can minimize the number of costly DOM operations required to update the UI.</p>
+<h2 id="Solution">Solution</h2><p>React provides a component lifecycle function, <code>shouldComponentUpdate</code>, which is triggered before the re-rendering process starts (virtual DOM comparison and possible eventual DOM reconciliation), giving the developer the ability to short circuit this process. The default implementation of this function returns <code>true</code>, leaving React to perform the update.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shouldComponentUpdate: <span class="function"><span class="keyword">function</span>(<span class="params">nextProps, nextState</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>We could easily implement <code>shouldComponentUpdate</code> for simple props/state structures like bellow:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shouldComponentUpdate: <span class="function"><span class="keyword">function</span>(<span class="params">nextProps, nextState</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.props.value !== nextProps.value) </span><br><span class="line">      || <span class="keyword">this</span>.state.value !== nextState.value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>We could even generalize an implementation based on shallow equality (cause React will invoke this function pretty <strong>OFTEN</strong>, so the implementation has to be <strong>FAST</strong>) and mix it into components. In fact, React already provides such implementation: <a href="https://facebook.github.io/react/docs/pure-render-mixin.html" target="_blank" rel="external">PureRenderMixin</a>.</p>
+<h2 id="Issue">Issue</h2><p>So far so good.<br>Unfortunately, there may be two issues if we bring <code>PureRenderMixin</code> into our App directly.</p>
+<hr>
+<blockquote>
+<p><em>Manage object references carelessly</em></p>
+</blockquote>
+<p>I pushed some commits into the demo App mentioned in previous article. One of the commits is adding a functionality <code>Like</code>, you can click heart icon to like a book. See code <a href="https://github.com/just4fun/classics/commit/c010dc4cbacc021c45594720955a73664b28deec" target="_blank" rel="external">here</a>.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/ibook-like-functionality.jpg" alt=""><br></div>
+
+<p>In addition, I added <code>debug</code> module to track which components will be re-render. See code <a href="https://github.com/just4fun/classics/commit/f2915ad12d644f8691ab6ee309b7e8ceb1c9aedf" target="_blank" rel="external">here</a>.</p>
+<p>Now I search some books via entering keyword.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/re-render-monitor.jpg" alt=""><br></div>
+
+<p>Then I want to like the first book, so I click the heart icon.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/re-render-monitor-like.jpg" alt=""><br></div>
+
+<p>As you see, all the book items are re-rendered. Since we want to squeeze out performance, then I bring <code>PreRenderMixin</code>. See code <a href="https://github.com/just4fun/classics/commit/6ff882cd9c4913d92d9c4b7dbfc5e447f1df598e" target="_blank" rel="external">here</a>.</p>
+<p>Unfortunately, <strong>NOTHING</strong> happen, neither the like icon nor the Chrome console.</p>
+<p>The problem is that since the parent and inner components share a reference to the same object <code>book</code>, when the object gets mutated on onClick function, the prop the inner component had will change. So, when the re-rendering process starts, and <code>shouldComponentUpdate</code> gets invoked, <code>this.props.book</code> will be equal to <code>nextProps.value.book</code>, because in fact, they reference the same object.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> BookItem = React.createClass(&#123;</span><br><span class="line">  </span><br><span class="line">  mixins: [PureRenderMixin],</span><br><span class="line">  </span><br><span class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> book = <span class="keyword">this</span>.props.book;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">var</span> like_status = <span class="string">'glyphicon glyphicon-heart'</span>;</span><br><span class="line">    <span class="keyword">if</span> (book.isLike) &#123;</span><br><span class="line">      like_status += <span class="string">' like'</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    debug(<span class="string">'render &lt;BookItem /&gt;'</span>, book.title);</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      <span class="xml"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">className</span>=<span class="value">'main-section__book'</span>&gt;</span></span><br><span class="line">        // ...</span><br><span class="line">        <span class="tag">&lt;<span class="title">div</span> <span class="attribute">className</span>=<span class="value">'main-section__book-action'</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="title">span</span> <span class="attribute">className</span>=<span class="value">&#123;like_status&#125;</span> <span class="attribute">onClick</span>=<span class="value">&#123;this._onClick.bind(this,</span> <span class="attribute">book</span>)&#125;&gt;</span><span class="tag">&lt;/<span class="title">span</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line">    )</span>;</span><br><span class="line">  &#125;,</span><br><span class="line">  </span><br><span class="line">  _onClick: <span class="function"><span class="keyword">function</span>(<span class="params">book</span>) </span>&#123;</span><br><span class="line">    BookGetActions.like(book); <span class="comment">// the `book` share the same reference with `this.props.book`</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>To solve this issue, first of all, we should clone another book object to prevent the same reference sharing.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">_onClick: <span class="function"><span class="keyword">function</span>(<span class="params">book</span>) </span>&#123;</span><br><span class="line">  BookGetActions.like(<span class="built_in">JSON</span>.parse(<span class="built_in">JSON</span>.stringify(book))); <span class="comment">// a simple way to clone</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Then we should find the specific book in book list which is stored in <code>BookStore</code>, and replace it with the clone one. Code is omitted.</p>
+<p>Everything seems OK. However, it may bring another issue.   </p>
+<hr>
+<blockquote>
+<p><em>complex data structures</em></p>
+</blockquote>
+<p>As <a href="https://facebook.github.io/react/docs/pure-render-mixin.html" target="_blank" rel="external">React doc</a> mentioned, <code>PureRenderMixin</code> only <strong>SHALLOWLY</strong> compares the objects. If these contain complex data structures, it may produce false-negatives for deeper differences, which will cause re-render even everything between two objects are same.</p>
+<h2 id="Real_solution">Real solution</h2><p><a href="https://github.com/facebook/immutable-js" target="_blank" rel="external">Immutable-js</a> is a JavaScript collections library which provides immutable persistent collections. Immutability makes tracking changes cheap; a change will always result in a new object so we <strong>ONLY</strong> need to check if the reference to the object has changed.</p>
+<p>Immutable data structures provides you a cheap and less verbose way to track changes on objects, which is all we need to implement <code>shouldComponentUpdate</code>. Therefore, if we model props and state attributes using the abstractions provided by immutable-js we’ll be able to use <code>PureRenderMixin</code> and get a nice boost in perf. See code <a href="https://github.com/just4fun/classics/commit/ce3474f2b6d40a6a5c6e1e1b3d56681f5ca2b95f" target="_blank" rel="external">here</a>.</p>
+<p>Run our App again, and like the first book, then check the Chrome console.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/re-render-monitor-immutable-like.jpg" alt=""><br></div>
+
+<p>As we expected, only the liked book has been re-rendered. That’s what Immutable-js do for us.</p>
+<h2 id="References">References</h2><ul>
+<li><a href="https://facebook.github.io/react/docs/advanced-performance.html" target="_blank" rel="external">https://facebook.github.io/react/docs/advanced-performance.html</a></li>
+<li><a href="https://facebook.github.io/react/docs/pure-render-mixin.html" target="_blank" rel="external">https://facebook.github.io/react/docs/pure-render-mixin.html</a></li>
+<li><a href="http://calendar.perfplanet.com/2013/diff/" target="_blank" rel="external">http://calendar.perfplanet.com/2013/diff/</a></li>
+</ul>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>In <a href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/">previous article</a>, we got a general understanding about Flux architecture. And in <a href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/#Best_Practise">Best Practise</a> section, I have mentioned <code>Immutable data</code> which I haven’t take a look yet. Now it’s time to dig into it.</p>]]>
+    
+    </summary>
+    
+      <category term="flux" scheme="http://just4fun.github.io/hexo-blog/tags/flux/"/>
+    
+      <category term="immutable" scheme="http://just4fun.github.io/hexo-blog/tags/immutable/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Flux Architecture]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/</id>
+    <published>2015-05-12T15:16:05.000Z</published>
+    <updated>2015-09-04T12:07:16.000Z</updated>
+    <content type="html"><![CDATA[<p>At the end of last year, there are two interesting stuff produced by Facebook came into fashion. One is <a href="http://facebook.github.io/react/" target="_blank" rel="external">React</a>, another is <a href="http://facebook.github.io/flux/" target="_blank" rel="external">Flux</a>.</p>
+<a id="more"></a>
+<p>Let’s have a detailed overview about Flux.</p>
+<h2 id="Overview">Overview</h2><p>An application architecture that complements React’s compassable view components by utilising <strong>unidirectional</strong> data flow.</p>
+<p><img src="/hexo-blog/img/flux-diagram.png" alt="unidirectional work flow"></p>
+<h2 id="Main_Components">Main Components</h2><ul>
+<li>Dispatcher<ul>
+<li><strong>central hub</strong>, manages all data flow in application</li>
+<li>distribute the <strong>Actions</strong> to the <strong>Stores</strong></li>
+</ul>
+</li>
+<li>Action<ul>
+<li>send an object (aka <strong>payload</strong>) contains <strong>type</strong> and <strong>data</strong> to dispatcher</li>
+<li>do not contain knowledge about how to update the stores</li>
+<li>invoke from event handlers of <strong>views</strong> or <strong>server</strong></li>
+</ul>
+</li>
+<li>Store<ul>
+<li>contain application <strong>state</strong> and <strong>logic</strong></li>
+<li>register itself with the dispatcher and provide it with a callback</li>
+<li>broadcast an event to notify the views to update</li>
+</ul>
+</li>
+<li>View (Controller-View)<ul>
+<li>get data from the stores</li>
+<li>render and pass data down to its descendants</li>
+</ul>
+</li>
+</ul>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/flux-diagram-detail.png" alt="Flux main components"><br></div>
+
+<h2 id="Compare_with_MVC">Compare with MVC</h2><p>In my opinion, I’m not in favor of camparing Flux with MVC.</p>
+<p>Flux is an architecture which help React to build client-side application. With Flux, React can be used more easily.</p>
+<ul>
+<li>store application <strong>state</strong> in Store, like Ember-data</li>
+<li>easy to <strong>communicate</strong> between React components</li>
+<li>unidirectional data flow is more <strong>predictable</strong></li>
+</ul>
+<p>However, if you want to use Flux <strong>independently</strong> without React, that maybe a little difficult. The unidirectional data flow is dependant on the core concept of React: <strong>Virtual DOM</strong>. Once user triggers an event from view, the flow cycle starts. When it reachs Store, it will emit an event to notify View to re-render, which is based on Virtual DOM. Therefore, you should implement a set of things which React already prepare for you.</p>
+<p>As for MVC, it’s also an architectural pattern, but it’s more common. One of the disadvantages about Flux is that it’s a little hard to migrate current architecture to Flux. Imagine that you have an application with one MV* framework, such as Angular or Ember. If you want to use Flux, maybe you should rebuild your whole application. It’s no need to do the migration indeed.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/mvc-diagram.png" alt="MVC work flow"><br></div>
+
+<p>What is more, I think we should compare Flux with <strong>MVVM</strong>, not MVC, because some frameworks like Backbone just implement MVC but has no data-binding, and the data-binding is the biggest difference from unidirectional data flow. So in my opinoin, it’s boring to compare pure MVC with Flux.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/mvvm-diagram.png" alt="MVVM work flow"><br></div>
+
+<h2 id="Best_Practise">Best Practise</h2><ul>
+<li>ajax calls should come from Action</li>
+<li>distinguish between view triggered actions and server/API triggered actions</li>
+<li>distinguish between <strong>stateful</strong> Controller-Views and <strong>stateless</strong> Views</li>
+<li><strong>Immutable</strong> data (See my another <a href="http://just4fun.github.io/hexo-blog/2015/07/18/use-immutable-js-in-react-application/">post</a>)</li>
+</ul>
+<h2 id="Demo">Demo</h2><p>I have wrote a simple demo which used React and Flux.<br>Just for fun.</p>
+<ul>
+<li>Repo: <a href="https://github.com/just4fun/classics/tree/master/repos/react_flux" target="_blank" rel="external">https://github.com/just4fun/classics/tree/master/repos/react_flux</a></li>
+<li>Live Demo: <a href="http://just4fun.github.io/classics">http://just4fun.github.io/classics</a></li>
+</ul>
+<h2 id="References">References</h2><ul>
+<li><a href="https://facebook.github.io/flux/docs/overview.html" target="_blank" rel="external">https://facebook.github.io/flux/docs/overview.html</a></li>
+<li><a href="http://fluxxor.com/what-is-flux.html" target="_blank" rel="external">http://fluxxor.com/what-is-flux.html</a></li>
+<li><a href="https://scotch.io/tutorials/getting-to-know-flux-the-react-js-architecture" target="_blank" rel="external">https://scotch.io/tutorials/getting-to-know-flux-the-react-js-architecture</a></li>
+<li><a href="http://racingtadpole.com/blog/flux-react-best-practices/" target="_blank" rel="external">http://racingtadpole.com/blog/flux-react-best-practices/</a></li>
+</ul>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>At the end of last year, there are two interesting stuff produced by Facebook came into fashion. One is <a href="http://facebook.github.io/react/">React</a>, another is <a href="http://facebook.github.io/flux/">Flux</a>.</p>]]>
+    
+    </summary>
+    
+      <category term="facebook" scheme="http://just4fun.github.io/hexo-blog/tags/facebook/"/>
+    
+      <category term="flux" scheme="http://just4fun.github.io/hexo-blog/tags/flux/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[What the hell is F2E]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2015/04/29/what-the-hell-is-f2e/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/04/29/what-the-hell-is-f2e/</id>
+    <published>2015-04-29T09:30:19.000Z</published>
+    <updated>2015-04-29T12:11:53.000Z</updated>
+    <content type="html"><![CDATA[<p>As a F2E (Front End Engineer), there is a big headache that how should I explain to others what is F2E or what F2E do.</p>
+<a id="more"></a>
+<hr>
+<p>In general, many people consider F2E the similar role like UI/UX, they also think F2E should belong to the Design Department, not the Develop Department. In their opinions, the biggest task for F2E is transform <code>.psd</code> file which produced by UI/UX to <code>.html</code> file, and our weapons are only html and css. A little javascript at most.</p>
+<p>For instance, below is conversation between I and some guys in other departments when I decided to resign from my previous company.</p>
+<p><em>– Where will you go?<br>– Somewhere I can do the interesting things about front end.<br>– So you’re the F2E here!<br>– But what I did is just a small part of front end.<br>– So…what F2E should do?<br>– Ummm…</em></p>
+<p>At that time, I always don’t know how to explain. Of course I won’t tell them such as MVC/MVVM or modularization.</p>
+<hr>
+<p>Even for some F2Es, they also think the main task is build web pages with html5 and css3. As for javascript, it is just used for form validation, ajax, or building sliders.</p>
+<p>Today, there are still many companys only use jQuery in their projects. They use JSP or ASP.NET to render page, then use jQuery to do some UI changes. All the javascript code are in the global namespace, even in tempaltes. In addition, if they want to upgrade jQuery, they should download it from jQuery official site, and then put it into repo.</p>
+<hr>
+<p>So, what the hell is F2E?</p>
+<p>When decide to build a web application(context of use aside), from F2E’s perspective, we could do as below.</p>
+<ul>
+<li>use RequireJS/Browserify/Webpack for modularization.</li>
+<li>use npm/bower for version control of libraries.</li>
+<li>use Grunt/Gulp for building automating tasks.</li>
+<li>select appropriate framework/libraries</li>
+<li>abstract reusable components</li>
+<li>write integration/unit tests</li>
+<li>optimize performance</li>
+<li>ensure compatibility</li>
+<li>etc.</li>
+</ul>
+<p>We can move most logics from backend to front end based on these advanced tools and modern browsers, and backend can only focus on APIs.</p>
+<hr>
+<p>Nowadays, you can write any application with javascript, not only web application. You can write backend with Node, build desktop application with node-webkit, even build native app with react-native.</p>
+<p>Are you ready to write javascript?</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>As a F2E (Front End Engineer), there is a big headache that how should I explain to others what is F2E or what F2E do.</p>]]>
+    
+    </summary>
+    
+      <category term="f2e" scheme="http://just4fun.github.io/hexo-blog/tags/f2e/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Some basic Git commands]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2015/02/13/some-basic-git-commands/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/02/13/some-basic-git-commands/</id>
+    <published>2015-02-13T13:11:12.000Z</published>
+    <updated>2015-04-29T12:22:58.000Z</updated>
+    <content type="html"><![CDATA[<p>Record some basic Git commands here for later reference.</p>
+<a id="more"></a>
+<h3 id="Stashing">Stashing</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ git stash                         <span class="comment"># stash half-done code into stack except untracked files</span></span><br><span class="line">$ git stash -u                      <span class="comment"># stash any changed files</span></span><br><span class="line">$ git stash -p                      <span class="comment"># prompt which of changes you would like to stash</span></span><br><span class="line">$ git stash branch new_branch_name  <span class="comment"># create new branch with stash and drop it from stack</span></span><br><span class="line">$</span><br><span class="line">$ git stash list                    <span class="comment"># list stored stashes</span></span><br><span class="line">$</span><br><span class="line">$ git stash apply                   <span class="comment"># apply stored stash but the file you staged before wasn’t restaged</span></span><br><span class="line">$ git stash apply --index           <span class="comment"># apply stored stash and reapply the staged changes</span></span><br><span class="line">$ git stash pop                     <span class="comment"># apply stored stash and drop it from stack immediately</span></span><br><span class="line">$</span><br><span class="line">$ git stash drop                    <span class="comment"># drop stash from stack</span></span><br><span class="line">$ git stash clear                   <span class="comment"># clear all stashes from stack</span></span><br><span class="line">$</span><br><span class="line">$ git revert HEAD                   <span class="comment"># record a new commit to revert last commit</span></span><br><span class="line">$ git revert &lt;commit&gt;               <span class="comment"># record a new commit to revert specific commit</span></span><br><span class="line">$ git cherry-pick &lt;commit&gt;          <span class="comment"># reverse to `git revert`, record a new commit to apply specific commit change</span></span><br><span class="line">$</span><br><span class="line">$ git reset --soft &lt;commit&gt;         <span class="comment"># reset to specific commit and keep the changes in index</span></span><br><span class="line">$ git reset --hard &lt;commit&gt;         <span class="comment"># reset to specific commit and discard the changes</span></span><br></pre></td></tr></table></figure>]]></content>
+    <summary type="html">
+    <![CDATA[<p>Record some basic Git commands here for later reference.</p>]]>
+    
+    </summary>
+    
+      <category term="git" scheme="http://just4fun.github.io/hexo-blog/tags/git/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[How Router of Single Page Application works]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2015/02/08/how-router-of-single-page-application-works/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/02/08/how-router-of-single-page-application-works/</id>
+    <published>2015-02-08T09:04:39.000Z</published>
+    <updated>2015-04-23T12:15:50.000Z</updated>
+    <content type="html"><![CDATA[<p>In some javascript frameworks (<a href="http://backbonejs.org/" target="_blank" rel="external">Backbone</a>, <a href="http://emberjs.com/" target="_blank" rel="external">Ember</a>, <a href="https://angularjs.org/" target="_blank" rel="external">Angular</a>, etc.), there is <code>Router</code>, which provide us ability to manage states in our applications.</p>
+<a id="more"></a>
+<p>Generally, there are two ways to manage url. One is <strong>hash</strong>, which relies upon the <code>hashchange</code> event existing in the browser. The other is <strong>history</strong>, which relies upon the browser’s <code>history</code> API.</p>
+<hr>
+<p>To bootstrap router, we should have some config first.</p>
+<p>In Backbone,</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use hash fragment</span></span><br><span class="line">Backbone.history.start();</span><br><span class="line"><span class="comment">// use History API</span></span><br><span class="line">Backbone.history.start(&#123;pushState: <span class="literal">true</span>&#125;)</span><br></pre></td></tr></table></figure>
+<p>In Ember,<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use hash fragment</span></span><br><span class="line">App.Router.reopen(&#123;location: <span class="string">'hash'</span>&#125;);</span><br><span class="line"><span class="comment">// use History API</span></span><br><span class="line">App.Router.reopen(&#123;location: <span class="string">'history'</span>&#125;);</span><br><span class="line"><span class="comment">// automatic detection</span></span><br><span class="line">App.Router.reopen(&#123;location: <span class="string">'auto'</span>&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>In Angular,<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// use hash fragment</span></span><br><span class="line">$locationProvider.html5Mode(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">// use History API</span></span><br><span class="line">$locationProvider.html5Mode(<span class="literal">true</span>);</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>As we know, when we use <code>hash</code>, the url behind <code>#</code> will not be sent to server. So we can simply add <code>hashchange</code> event to listen url change (in essence, it’s hash change).<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.onhashchange = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (location.hash == <span class="string">'#about'</span>) &#123;</span><br><span class="line">    <span class="comment">// do stuff here</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>These frameworks have already wraped this default configuration for us, we just follow their own router way to config.</p>
+<hr>
+<p>But for <code>history</code>, how it works? It relies upon <code>pushState</code> and <code>replaceState</code>.</p>
+<p>When we click <code>&lt;a&gt;</code> tag to another link, we should do some works,</p>
+<ul>
+<li>prevent default behaviour</li>
+<li>get the url which we want to link to</li>
+<li>use pushState or replaceState to change the url without any refresh</li>
+</ul>
+<p>For Ember and Angular, this is built-in support. So we should implement this by ourself in Backbone application.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$(<span class="built_in">document</span>).on(<span class="string">"a"</span>, <span class="string">"click"</span>, <span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> href = $(<span class="keyword">this</span>).attr(<span class="string">"href"</span>);</span><br><span class="line">  <span class="keyword">var</span> protocol = <span class="keyword">this</span>.protocol + <span class="string">"//"</span>;</span><br><span class="line"> </span><br><span class="line">  <span class="keyword">if</span> (href.slice(protocol.length) !== protocol) &#123;</span><br><span class="line">    e.preventDefault();</span><br><span class="line">    Backbone.history.navigate(href, <span class="literal">true</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<hr>
+<p>One thing to <strong>NOTE</strong> is that, if we use <code>history</code> API, it’s must be supported in our server side. Otherwise, we will get 404 page when we refresh.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>In some javascript frameworks (<a href="http://backbonejs.org/">Backbone</a>, <a href="http://emberjs.com/">Ember</a>, <a href="https://angularjs.org/">Angular</a>, etc.), there is <code>Router</code>, which provide us ability to manage states in our applications.</p>]]>
+    
+    </summary>
+    
+      <category term="pushstate" scheme="http://just4fun.github.io/hexo-blog/tags/pushstate/"/>
+    
+      <category term="router" scheme="http://just4fun.github.io/hexo-blog/tags/router/"/>
+    
+      <category term="spa" scheme="http://just4fun.github.io/hexo-blog/tags/spa/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[CSS3 selector issue with Ember metamorph]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2015/02/06/css3-selector-issue-with-ember-metamorph/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/02/06/css3-selector-issue-with-ember-metamorph/</id>
+    <published>2015-02-06T14:28:56.000Z</published>
+    <updated>2015-04-23T12:15:50.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="http://emberjs.com/" target="_blank" rel="external">Ember.js</a> has been used in our application, and this week, I picked up a task to render a list, which seems very simple.</p>
+<a id="more"></a>
+
+<!--￼0-->
+
+
+<p>As you know, Ember use <a href="http://handlebarsjs.com/" target="_blank" rel="external">Handlebars</a> to render. For visual design, the first item has no <code>margin-top</code>, and the last item has no <code>border-bottom</code>.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.settings-section__organization &#123;&#10;  margin-top: 10px;&#10;  border-bottom: 1px solid grey;&#10;  &#38;:first-child &#123;&#10;    margin-top: 0;&#10;  &#125;&#10;  &#38;:last-child &#123;&#10;    border-bottom: none;&#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<p>However, it <strong>DOESN’T</strong> work.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;div class=&#34;settings-section&#34;&#62;&#10;  &#60;script id=&#34;metamorph-23-start&#34; type=&#34;text/x-placeholder&#34;&#62;&#10;  &#60;script id=&#34;metamorph-19-start&#34; type=&#34;text/x-placeholder&#34;&#62;&#10;  &#60;div class=&#34;settings-section__organization&#34;&#62;&#10;  ...&#10;  &#60;/div&#62;&#10;  &#60;script id=&#34;metamorph-16-start&#34; type=&#34;text/x-placeholder&#34;&#62;&#10;  &#60;script id=&#34;metamorph-23-start&#34; type=&#34;text/x-placeholder&#34;&#62;&#10;&#60;/div&#62;</span><br></pre></td></tr></table></figure></p>
+<p>As the rendered template, Handlebars inserted marker elements into DOM, as known as <code>metamorph</code>.</p>
+<blockquote>
+<p>Tips: <em>If you want to avoid your property output getting wrapped in these markers, you can use the <code>unbound</code> helper, which will make the output won’t be automatically updated.</em></p>
+</blockquote>
+<p>So both first element and last element are not matched as expected.</p>
+<p>Then I want to use <code>:first-of-type</code> and <code>:last-of-type</code>.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.settings-section__organization &#123;&#10;  margin-top: 10px;&#10;  border-bottom: 1px solid grey;&#10;  &#38;:first-of-type &#123;&#10;    margin-top: 0;&#10;  &#125;&#10;  &#38;:first-of-type &#123;&#10;    border-bottom: none;&#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Actually this reminds me that, these two selectors are made for <code>elements</code>, such as <code>div:first-of-type</code>. It may doesn’t work for css class.</p>
+<p>In fact, it <strong>WORKS</strong>.</p>
+<p>After investigation, I found <code>.class:first-of-type</code> is not perfect for this issue, because it means:</p>
+<blockquote>
+<p><em>Select an element if it has the given class and is the first of its type among its siblings.</em></p>
+</blockquote>
+<p>In other words, if we add a <code>&lt;p&gt;</code> tag before <code>&lt;div class=&quot;settings-section__organization&quot;&gt;</code>, it works. But if we add a <code>&lt;div&gt;</code> tag with no class, it breaks down.</p>
+<p>I share this interesting issue to other F2E guys today, and one of them give me a css trick.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.settings-section__organization &#123;&#10;  margin-top: 0;&#10;&#125;&#10;&#10;.settings-section__organization ~ .settings-section__organization &#123;&#10;  margin-top: 10px;&#10;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>The above solution will apply a top margin of 10px on <strong>ONLY</strong> the first <code>.settings-section__organization</code> class, which benefited from the general sibling selector, <strong>tilde sign</strong> <code>~</code>. It’s definitely a hack but it works great on most browsers.</p>
+<p>In addition, this doesn’t fix the issue of needing to select the last child obviously, which have yet to find a pure CSS solution for.</p>
+<p>One thing to keep in mind is that from Ember 1.8.0, there is a change log,</p>
+<blockquote>
+<p><em>Remove metamorph in favor of morph package (removes the need for script tags in the DOM).</em></p>
+</blockquote>
+<p>Which means we will finally get rid of all those metamorph tags in the DOM. At that time, we can just remove the CSS hacks required to do child-based styling in favor of using native CSS selectors and pseudo selectors.</p>
+<h3 id="Updated_few_days_later">Updated few days later</h3><p>However, there is another approach which we can bypass the last-child issue.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">.settings-section__organization &#123;&#10;  margin-top: 0;&#10;&#125;&#10;&#10;.settings-section__organization ~ .settings-section__organization &#123;&#10;  margin-top: 10px;&#10;  border-top: 1px solid grey;&#10;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>As above, we can simply add <code>border-top</code> to each item except the first one, instead of adding <code>border-bottom</code> to each item except the last one.</p>
+<p>Does it also likes a hack, huh?</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="http://emberjs.com/">Ember.js</a> has been used in our application, and this week, I picked up a task to render a list, which seems very simple.</p>]]>
+    
+    </summary>
+    
+      <category term="css" scheme="http://just4fun.github.io/hexo-blog/tags/css/"/>
+    
+      <category term="ember" scheme="http://just4fun.github.io/hexo-blog/tags/ember/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Deploy meaning on Amazon EC2]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2015/01/04/deploy-meaning-on-amazon-ec2/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/01/04/deploy-meaning-on-amazon-ec2/</id>
+    <published>2015-01-04T14:02:47.000Z</published>
+    <updated>2015-04-23T12:15:50.000Z</updated>
+    <content type="html"><![CDATA[<p><a href="https://github.com/just4fun/meaning" target="_blank" rel="external">meaning</a> is a mini blogging platform inspired by MEAN.JS(MongoDB, Express, AngularJS, and Node.js), and I will take notes here about how I deploy it on <a href="http://aws.amazon.com/ec2/" target="_blank" rel="external">Amazon EC2</a>.</p>
+<a id="more"></a>
+<h3 id="Amazon_EC2">Amazon EC2</h3><p>First of all, you should pay for an Amazon Machine Image to launch an instance.<br>I choose <code>Ubuntu</code> and what is more, I buy an extra <a href="http://aws.amazon.com/ec2/purchasing-options/reserved-instances/" target="_blank" rel="external">Reserved Instance</a> to receive a discount on my instance usage compared to running On-Demand instances.<br>You can know more about <code>Reserved Instance</code> <a href="http://blog.cloudability.com/4-things-youre-getting-wrong-aws-reserved-instance-application/" target="_blank" rel="external">here</a>.</p>
+<h3 id="Release">Release</h3><p>Now, we should release project to get the released code which will be deployed to production.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grunt build -release</span><br></pre></td></tr></table></figure></p>
+<p>And the <code>dist</code> folder contains all the released files.</p>
+<h3 id="FTP">FTP</h3><p>For Windows, <a href="https://filezilla-project.org/" target="_blank" rel="external">FileZilla</a> is a nice choice for FTP solution.<br>And for Mac, I like <a href="http://panic.com/transmit/" target="_blank" rel="external">Transmit</a>.</p>
+<p>First, copy your Amazon EC2 .pem file to your local ssh directory ~/.ssh.<br>Next, open ~/.ssh/config and add extra line to let your app know the PEM, for example:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IdentityFile &#34;~/.ssh/just4fun.pem&#34;</span><br></pre></td></tr></table></figure></p>
+<p>At last, save the config changes and alter the permissions of the PEM file to 700:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ chmod <span class="number">700</span> ~/.ssh/just4fun.pem</span><br></pre></td></tr></table></figure></p>
+<p>Try command below to test whether the PEM file works:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -i ~/.ssh/just4fun.pem root@your_amazon_server</span><br></pre></td></tr></table></figure></p>
+<p>When we connect our server successfully, we should create a virtual host which will contains the released files:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir /var/www/just4fun</span><br></pre></td></tr></table></figure></p>
+<p>Then copy directories and files to the virtual host which we created just now:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/dist/client</span><br><span class="line">/dist/server</span><br><span class="line">/package.json</span><br></pre></td></tr></table></figure></p>
+<p>Tap commnd below to install the node dependencies:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -production</span><br></pre></td></tr></table></figure></p>
+<p>At last we get directory structure like below:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/var/www/just4fun&#10;  --client&#10;  --server&#10;  --package.json&#10;  --node_modules</span><br></pre></td></tr></table></figure></p>
+<h3 id="DB">DB</h3><p>We use <a href="http://www.mongodb.org/" target="_blank" rel="external">MongoDB</a> in meaning and there is a <a href="http://www.mongodbspain.com/en/2014/08/30/install-mongodb-on-ubuntu-14-04/" target="_blank" rel="external">post</a> about how to install MongoDB on Ubuntu(14.04) for reference. Or you can visit official site to find the installation.</p>
+<h3 id="Web_Server">Web Server</h3><p>I previously use <a href="http://httpd.apache.org/" target="_blank" rel="external">Apache</a>, and I changed it to <a href="http://wiki.nginx.org/Main" target="_blank" rel="external">nginx</a> now.<br>In order to install Nginx we execute:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ apt-get install nginx</span><br></pre></td></tr></table></figure></p>
+<p>Then create a virtual host configuration file in /etc/nginx/sites-available, such as <code>/etc/nginx/sites-available/just4fun</code>.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">server &#123;&#10;  listen 80 default_server;&#10;  listen [::]:80 default_server ipv6only=on;&#10;  root /var/www/just4fun/client;&#10;  index index.html index.htm;&#10;&#10;  # Make site accessible from http://localhost/&#10;  server_name talent-is.me;&#10;&#10;  location / &#123;&#10;    # First attempt to serve request as file, then&#10;    # as directory, then fall back to displaying a 404.&#10;    rewrite ^/admin/?$ /admin/admin-index.html break;&#10;    rewrite ^/login/?$ /admin/admin-login.html break;&#10;    try_files $uri $uri/ =404;&#10;    # Uncomment to enable naxsi on this location&#10;    # include /etc/nginx/naxsi.rules&#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Next, we should disable the default vhost:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm /etc/nginx/sites-enabled/default</span><br></pre></td></tr></table></figure></p>
+<p>And enable our virtual host:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /etc/nginx/sites-available/just4fun /etc/nginx/sites-enabled/just4fun</span><br></pre></td></tr></table></figure></p>
+<p>At last, restart nginx with new configuration:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service nginx restart</span><br></pre></td></tr></table></figure></p>
+<p>That’s all. :)</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p><a href="https://github.com/just4fun/meaning">meaning</a> is a mini blogging platform inspired by MEAN.JS(MongoDB, Express, AngularJS, and Node.js), and I will take notes here about how I deploy it on <a href="http://aws.amazon.com/ec2/">Amazon EC2</a>.</p>]]>
+    
+    </summary>
+    
+      <category term="ec2" scheme="http://just4fun.github.io/hexo-blog/tags/ec2/"/>
+    
+      <category term="mongodb" scheme="http://just4fun.github.io/hexo-blog/tags/mongodb/"/>
+    
+      <category term="nginx" scheme="http://just4fun.github.io/hexo-blog/tags/nginx/"/>
+    
+      <category term="transmit" scheme="http://just4fun.github.io/hexo-blog/tags/transmit/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Sticky footer]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2014/12/21/sticky-footer/"/>
+    <id>http://just4fun.github.io/hexo-blog/2014/12/21/sticky-footer/</id>
+    <published>2014-12-21T14:03:02.000Z</published>
+    <updated>2015-04-23T12:15:50.000Z</updated>
+    <content type="html"><![CDATA[<p>When I built up this blog via <a href="https://github.com/hexojs/hexo" target="_blank" rel="external">hexo</a> and themed it via <a href="https://github.com/willerce/hexo-theme-noderce" target="_blank" rel="external">noderce</a>, I found there was a bug on UI – The footer of the page wasn’t stuck to the bottom because of the thin on content.</p>
+<a id="more"></a>
+<p>Expectantly, we want our footer will be stuck to the bottom even when thin on content.</p>
+<p>After I googled, I found there was a site which named <a href="http://www.cssstickyfooter.com/" target="_blank" rel="external">cssstickyfooter</a> and supported cross browser code for sticky footer, you can found the code <a href="http://www.cssstickyfooter.com/using-sticky-footer-code.html" target="_blank" rel="external">here</a>.</p>
+<p>However, the code on the site above only apply to the specific structure:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;div id=&#34;wrap&#34;&#62;&#10;  &#60;div id=&#34;main&#34;&#62;&#10;  &#60;/div&#62;&#10;&#60;/div&#62;&#10;&#60;div id=&#34;footer&#34;&#62;&#10;&#60;/div&#62;</span><br></pre></td></tr></table></figure>
+<p>or<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;div id=&#34;wrap&#34;&#62;&#10;  &#60;div id=&#34;header&#34;&#62;&#10;  &#60;/div&#62;&#10;  &#60;div id=&#34;main&#34;&#62;&#10;  &#60;/div&#62;&#10;&#60;/div&#62;&#10;&#60;div id=&#34;footer&#34;&#62;&#10;&#60;/div&#62;</span><br></pre></td></tr></table></figure></p>
+<p>And the structure of this blog like below:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;div id=&#34;header&#34;&#62;&#10;&#60;/div&#62;&#10;&#60;div id=&#34;wrap&#34;&#62;&#10;  &#60;div id=&#34;main&#34;&#62;&#10;  &#60;/div&#62;&#10;&#60;/div&#62;&#10;&#60;div id=&#34;footer&#34;&#62;&#10;&#60;/div&#62;</span><br></pre></td></tr></table></figure>
+<p>Which means if I want to use the solution given by <a href="http://www.cssstickyfooter.com/" target="_blank" rel="external">cssstickyfooter</a>, I have to change my html structure or change a little bit code.</p>
+<p>At last, I found a nice solution on <a href="http://getbootstrap.com/examples/sticky-footer/" target="_blank" rel="external">bootstrap</a>, regardless of where the header is.</p>
+<p>For example, we can just use few code below to implement sticky footer for this blog:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">html &#123;&#10;  position: relative;&#10;  min-height: 100%;&#10;&#125;&#10;&#10;#main &#123;&#10;  padding-bottom: 75px;&#10;&#125;&#10;&#10;footer &#123;&#10;  position: absolute;&#10;  bottom: 0;&#10;  width: 100%;&#10;&#125;</span><br></pre></td></tr></table></figure>
+<p>It look likes cool now?</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>When I built up this blog via <a href="https://github.com/hexojs/hexo">hexo</a> and themed it via <a href="https://github.com/willerce/hexo-theme-noderce">noderce</a>, I found there was a bug on UI – The footer of the page wasn’t stuck to the bottom because of the thin on content.</p>]]>
+    
+    </summary>
+    
+      <category term="css" scheme="http://just4fun.github.io/hexo-blog/tags/css/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[The difference between :nth-child and :nth-of-type]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2014/12/14/the-difference-between-nth-child-and-nth-of-type/"/>
+    <id>http://just4fun.github.io/hexo-blog/2014/12/14/the-difference-between-nth-child-and-nth-of-type/</id>
+    <published>2014-12-14T15:15:10.000Z</published>
+    <updated>2015-04-23T12:15:50.000Z</updated>
+    <content type="html"><![CDATA[<p>Just few days ago, when I wanna implement row stripping in a table, I still add <code>class=&#39;odd&#39;</code> to alternative rows via javascript, and give the color in the css class. It’s a little bit sad for a F2E. :(</p>
+<a id="more"></a>
+<p>In fact, there are pesudo class selectors in css3 which can easily implement row stripping, and the most useful selectors are <code>:nth-child</code> and <code>:nth-of-type</code>.</p>
+<p>It seems that the two selectors are similar in some situations, but there is exact difference between them. See two examples given in <a href="http://css-tricks.com/the-difference-between-nth-child-and-nth-of-type/" target="_blank" rel="external">css-tricks</a> below:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;section&#62;&#10;  &#60;p&#62;Little&#60;/p&#62;&#10;  &#60;p&#62;Piggy&#60;/p&#62;    &#60;!-- Want this one --&#62;&#10;&#60;/section&#62;</span><br></pre></td></tr></table></figure>
+<p>and we use the two selectors:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p:nth-child(2) &#123; color: red; &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p:nth-of-type(2) &#123; color: red; &#125;</span><br></pre></td></tr></table></figure>
+<p>As we expected, they will do same thing.</p>
+<p>Let’s see another example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;section&#62;&#10;  &#60;h1&#62;Words&#60;/h1&#62;&#10;  &#60;p&#62;Little&#60;/p&#62;&#10;  &#60;p&#62;Piggy&#60;/p&#62;    &#60;!-- Want this one --&#62;&#10;&#60;/section&#62;</span><br></pre></td></tr></table></figure>
+<p>:nth-of-type will match ‘Piggy’ element correctly and :nth-child will <strong>NOT</strong> works(it will match the ‘Little’ element).</p>
+<p>Because <code>p:nth-child(2)</code> means that, the matched item must be the second child of its parent and what is more, the child must be p element.<br>However, <code>p:nth-of-type(2)</code> just means please select the second p element of its parent.</p>
+<p>In other words, <code>:nth-child</code> is more conditional.</p>
+<p>Besides, there is another situation which I want to use :nth-child and :nth-of-type to implement, but both of them are not fit for it. See a example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;ul&#62;&#10;  &#60;li&#62;odd&#60;/li&#62;&#10;  &#60;li&#62;&#60;/li&#62;&#10;  &#60;li&#62;odd&#60;/li&#62;&#10;  &#60;li&#62;&#10;    &#60;ul&#62;&#10;      &#60;li&#62;&#60;/li&#62;&#10;      &#60;li&#62;odd&#60;/li&#62;&#10;      &#60;li&#62;&#60;/li&#62;&#10;    &#60;/ul&#62;&#10;  &#60;/li&#62;&#10;&#60;/ul&#62;</span><br></pre></td></tr></table></figure>
+<p>We want to change the color of these ‘odd’ elements, which will render the parent ‘ul’ as a row stripping tree, so we set <code>li:nth-child(odd)</code> and <code>li:nth-of-type(odd)</code> to it.</p>
+<p>However, the first two ‘odd’ will be changed to another color as expected, but the last which in the child ‘ul’ element will not be changed. The elements beside it will be matched instead.</p>
+<p>Because the two pesudo class selectors can only work in same level, which means if there is a child element, the index of the first child of this element will be recounted.</p>
+<p>To see actual examples, there is a <a href="http://css-tricks.com/examples/nth-child-tester/" target="_blank" rel="external">:nth Tester</a> for you.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Just few days ago, when I wanna implement row stripping in a table, I still add <code>class=&#39;odd&#39;</code> to alternative rows via javascript, and give the color in the css class. It’s a little bit sad for a F2E. :(</p>]]>
+    
+    </summary>
+    
+      <category term="css" scheme="http://just4fun.github.io/hexo-blog/tags/css/"/>
+    
+  </entry>
+  
+  <entry>
+    <title><![CDATA[Hello, hexo.]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2014/12/14/hello-hexo/"/>
+    <id>http://just4fun.github.io/hexo-blog/2014/12/14/hello-hexo/</id>
+    <published>2014-12-14T05:45:55.000Z</published>
+    <updated>2015-09-05T08:19:10.000Z</updated>
+    <content type="html"><![CDATA[<p>Hello, hexo.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Hello, hexo.</p>
+]]>
+    </summary>
+    
+  </entry>
+  
+</feed>

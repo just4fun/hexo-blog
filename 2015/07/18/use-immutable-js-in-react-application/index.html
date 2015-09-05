@@ -1,0 +1,188 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>just4fun › Use immutable.js in React Application</title>
+  <meta name="author" content="talent">
+  
+  <meta name="description" content="In previous article, we got a general understanding about Flux architecture. And in Best Practise section, I have mentioned Immutable data which I haven’t take a look yet. Now it’s time to dig into it.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Use immutable.js in React Application"/>
+  <meta property="og:site_name" content="just4fun"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/hexo-blog/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link rel="alternate" href="/hexo-blog/atom.xml" title="just4fun" type="application/atom+xml">
+  <link rel="stylesheet" href="/hexo-blog/css/style.css" media="screen" type="text/css">
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59840825-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+
+<body>
+  <header id="header"><div class="meta inner">
+  <h1><a href="/hexo-blog/">just4fun</a></h1>
+  <h2><a href="/hexo-blog/"></a></h2>
+  <nav id="main-nav">
+    <ul>
+      
+      <li><a href="/hexo-blog/archives">Archives</a></li>
+      
+      <li><a href="/hexo-blog/links">Links</a></li>
+      
+      <li><a href="/hexo-blog/atom.xml">Feed</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">Use immutable.js in React Application</h1>
+  
+
+      
+      <time datetime="2015-07-18T02:38:24.000Z">Jul 18 2015</time>
+      
+    </header>
+    <div class="entry">
+      
+        <p>In <a href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/">previous article</a>, we got a general understanding about Flux architecture. And in <a href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/#Best_Practise">Best Practise</a> section, I have mentioned <code>Immutable data</code> which I haven’t take a look yet. Now it’s time to dig into it.</p>
+<a id="more"></a>
+<h2 id="Preliminaries">Preliminaries</h2><p>If you have experience writing websites with React, you should know React makes use of a <code>virtual DOM</code>, which is a descriptor of a DOM subtree rendered in the browser. It is important to understand that the result of render is not an actual DOM node. Those are just lightweight JavaScript objects. That’s virtual DOM.</p>
+<p>When <code>setState</code> is called, the component rebuilds the virtual DOM for its children. If you call <code>setState</code> on the root element, then the entire React App is re-rendered. All the components, even if they didn’t change, will have their render method called. This may sound scary and inefficient but in practice, this works fine because we’re not touching the actual DOM.</p>
+<p>DOM operations are very expensive because modifying the DOM will also apply and calculate CSS styles, layouts. The saved time from unnecessary DOM modification can be longer than the time spent diffing the virtual DOM. This is the secret of React’s virtual DOM.</p>
+<p>However, the idea of re-rendering an entire subtree of components in response to every state change makes people wonder whether this process negatively impacts performance. That being said, if you want to get a considerable performance boost, you can minimize the number of costly DOM operations required to update the UI.</p>
+<h2 id="Solution">Solution</h2><p>React provides a component lifecycle function, <code>shouldComponentUpdate</code>, which is triggered before the re-rendering process starts (virtual DOM comparison and possible eventual DOM reconciliation), giving the developer the ability to short circuit this process. The default implementation of this function returns <code>true</code>, leaving React to perform the update.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">shouldComponentUpdate: <span class="function"><span class="keyword">function</span>(<span class="params">nextProps, nextState</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>We could easily implement <code>shouldComponentUpdate</code> for simple props/state structures like bellow:<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">shouldComponentUpdate: <span class="function"><span class="keyword">function</span>(<span class="params">nextProps, nextState</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">this</span>.props.value !== nextProps.value) </span><br><span class="line">      || <span class="keyword">this</span>.state.value !== nextState.value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>We could even generalize an implementation based on shallow equality (cause React will invoke this function pretty <strong>OFTEN</strong>, so the implementation has to be <strong>FAST</strong>) and mix it into components. In fact, React already provides such implementation: <a href="https://facebook.github.io/react/docs/pure-render-mixin.html" target="_blank" rel="external">PureRenderMixin</a>.</p>
+<h2 id="Issue">Issue</h2><p>So far so good.<br>Unfortunately, there may be two issues if we bring <code>PureRenderMixin</code> into our App directly.</p>
+<hr>
+<blockquote>
+<p><em>Manage object references carelessly</em></p>
+</blockquote>
+<p>I pushed some commits into the demo App mentioned in previous article. One of the commits is adding a functionality <code>Like</code>, you can click heart icon to like a book. See code <a href="https://github.com/just4fun/classics/commit/c010dc4cbacc021c45594720955a73664b28deec" target="_blank" rel="external">here</a>.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/ibook-like-functionality.jpg" alt=""><br></div>
+
+<p>In addition, I added <code>debug</code> module to track which components will be re-render. See code <a href="https://github.com/just4fun/classics/commit/f2915ad12d644f8691ab6ee309b7e8ceb1c9aedf" target="_blank" rel="external">here</a>.</p>
+<p>Now I search some books via entering keyword.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/re-render-monitor.jpg" alt=""><br></div>
+
+<p>Then I want to like the first book, so I click the heart icon.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/re-render-monitor-like.jpg" alt=""><br></div>
+
+<p>As you see, all the book items are re-rendered. Since we want to squeeze out performance, then I bring <code>PreRenderMixin</code>. See code <a href="https://github.com/just4fun/classics/commit/6ff882cd9c4913d92d9c4b7dbfc5e447f1df598e" target="_blank" rel="external">here</a>.</p>
+<p>Unfortunately, <strong>NOTHING</strong> happen, neither the like icon nor the Chrome console.</p>
+<p>The problem is that since the parent and inner components share a reference to the same object <code>book</code>, when the object gets mutated on onClick function, the prop the inner component had will change. So, when the re-rendering process starts, and <code>shouldComponentUpdate</code> gets invoked, <code>this.props.book</code> will be equal to <code>nextProps.value.book</code>, because in fact, they reference the same object.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> BookItem = React.createClass(&#123;</span><br><span class="line">  </span><br><span class="line">  mixins: [PureRenderMixin],</span><br><span class="line">  </span><br><span class="line">  render: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> book = <span class="keyword">this</span>.props.book;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">var</span> like_status = <span class="string">'glyphicon glyphicon-heart'</span>;</span><br><span class="line">    <span class="keyword">if</span> (book.isLike) &#123;</span><br><span class="line">      like_status += <span class="string">' like'</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    debug(<span class="string">'render &lt;BookItem /&gt;'</span>, book.title);</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      <span class="xml"><span class="tag">&lt;<span class="title">div</span> <span class="attribute">className</span>=<span class="value">'main-section__book'</span>&gt;</span></span><br><span class="line">        // ...</span><br><span class="line">        <span class="tag">&lt;<span class="title">div</span> <span class="attribute">className</span>=<span class="value">'main-section__book-action'</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;<span class="title">span</span> <span class="attribute">className</span>=<span class="value">&#123;like_status&#125;</span> <span class="attribute">onClick</span>=<span class="value">&#123;this._onClick.bind(this,</span> <span class="attribute">book</span>)&#125;&gt;</span><span class="tag">&lt;/<span class="title">span</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;/<span class="title">div</span>&gt;</span></span><br><span class="line">    )</span>;</span><br><span class="line">  &#125;,</span><br><span class="line">  </span><br><span class="line">  _onClick: <span class="function"><span class="keyword">function</span>(<span class="params">book</span>) </span>&#123;</span><br><span class="line">    BookGetActions.like(book); <span class="comment">// the `book` share the same reference with `this.props.book`</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>To solve this issue, first of all, we should clone another book object to prevent the same reference sharing.<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">_onClick: <span class="function"><span class="keyword">function</span>(<span class="params">book</span>) </span>&#123;</span><br><span class="line">  BookGetActions.like(<span class="built_in">JSON</span>.parse(<span class="built_in">JSON</span>.stringify(book))); <span class="comment">// a simple way to clone</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Then we should find the specific book in book list which is stored in <code>BookStore</code>, and replace it with the clone one. Code is omitted.</p>
+<p>Everything seems OK. However, it may bring another issue.   </p>
+<hr>
+<blockquote>
+<p><em>complex data structures</em></p>
+</blockquote>
+<p>As <a href="https://facebook.github.io/react/docs/pure-render-mixin.html" target="_blank" rel="external">React doc</a> mentioned, <code>PureRenderMixin</code> only <strong>SHALLOWLY</strong> compares the objects. If these contain complex data structures, it may produce false-negatives for deeper differences, which will cause re-render even everything between two objects are same.</p>
+<h2 id="Real_solution">Real solution</h2><p><a href="https://github.com/facebook/immutable-js" target="_blank" rel="external">Immutable-js</a> is a JavaScript collections library which provides immutable persistent collections. Immutability makes tracking changes cheap; a change will always result in a new object so we <strong>ONLY</strong> need to check if the reference to the object has changed.</p>
+<p>Immutable data structures provides you a cheap and less verbose way to track changes on objects, which is all we need to implement <code>shouldComponentUpdate</code>. Therefore, if we model props and state attributes using the abstractions provided by immutable-js we’ll be able to use <code>PureRenderMixin</code> and get a nice boost in perf. See code <a href="https://github.com/just4fun/classics/commit/ce3474f2b6d40a6a5c6e1e1b3d56681f5ca2b95f" target="_blank" rel="external">here</a>.</p>
+<p>Run our App again, and like the first book, then check the Chrome console.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/re-render-monitor-immutable-like.jpg" alt=""><br></div>
+
+<p>As we expected, only the liked book has been re-rendered. That’s what Immutable-js do for us.</p>
+<h2 id="References">References</h2><ul>
+<li><a href="https://facebook.github.io/react/docs/advanced-performance.html" target="_blank" rel="external">https://facebook.github.io/react/docs/advanced-performance.html</a></li>
+<li><a href="https://facebook.github.io/react/docs/pure-render-mixin.html" target="_blank" rel="external">https://facebook.github.io/react/docs/pure-render-mixin.html</a></li>
+<li><a href="http://calendar.perfplanet.com/2013/diff/" target="_blank" rel="external">http://calendar.perfplanet.com/2013/diff/</a></li>
+</ul>
+
+      
+    </div>
+    
+    <footer>
+      <div class="alignleft">
+      
+      
+  
+  <div class="tags">
+    <a href="/hexo-blog/tags/flux/">flux</a>, <a href="/hexo-blog/tags/immutable/">immutable</a>
+  </div>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+    
+  </div>
+</article>
+
+
+<section id="comment">
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer"><div class="inner"><div class="alignleft">
+  <p>
+  
+    &copy; 2015 talent
+  
+  </p>
+  <p>
+    <a href="http://github.com/willerce/hexo-theme-noderce">Noderce</a> Theme By <a href="http://willerce.com" >willerce</a>
+  </p>
+
+</div>
+<div class="clearfix"></div>
+
+<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<span id="busuanzi_container_site_pv">
+  This site has been visited <strong><span id="busuanzi_value_site_pv"></span></strong> times,
+</span>
+<span id="busuanzi_container_site_uv">
+  and there has been a total of <strong><span id="busuanzi_value_site_uv"></span></strong> guests.
+</span>
+</div></footer>
+  <script type="text/javascript">
+
+var disqus_shortname = 'talent';
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+
+</script>
+
+</body>
+</html>

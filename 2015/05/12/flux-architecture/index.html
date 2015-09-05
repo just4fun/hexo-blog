@@ -1,0 +1,204 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>just4fun › Flux Architecture</title>
+  <meta name="author" content="talent">
+  
+  <meta name="description" content="At the end of last year, there are two interesting stuff produced by Facebook came into fashion. One is React, another is Flux.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Flux Architecture"/>
+  <meta property="og:site_name" content="just4fun"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/hexo-blog/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link rel="alternate" href="/hexo-blog/atom.xml" title="just4fun" type="application/atom+xml">
+  <link rel="stylesheet" href="/hexo-blog/css/style.css" media="screen" type="text/css">
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59840825-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+
+<body>
+  <header id="header"><div class="meta inner">
+  <h1><a href="/hexo-blog/">just4fun</a></h1>
+  <h2><a href="/hexo-blog/"></a></h2>
+  <nav id="main-nav">
+    <ul>
+      
+      <li><a href="/hexo-blog/archives">Archives</a></li>
+      
+      <li><a href="/hexo-blog/links">Links</a></li>
+      
+      <li><a href="/hexo-blog/atom.xml">Feed</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">Flux Architecture</h1>
+  
+
+      
+      <time datetime="2015-05-12T15:16:05.000Z">May 12 2015</time>
+      
+    </header>
+    <div class="entry">
+      
+        <p>At the end of last year, there are two interesting stuff produced by Facebook came into fashion. One is <a href="http://facebook.github.io/react/" target="_blank" rel="external">React</a>, another is <a href="http://facebook.github.io/flux/" target="_blank" rel="external">Flux</a>.</p>
+<a id="more"></a>
+<p>Let’s have a detailed overview about Flux.</p>
+<h2 id="Overview">Overview</h2><p>An application architecture that complements React’s compassable view components by utilising <strong>unidirectional</strong> data flow.</p>
+<p><img src="/hexo-blog/img/flux-diagram.png" alt="unidirectional work flow"></p>
+<h2 id="Main_Components">Main Components</h2><ul>
+<li>Dispatcher<ul>
+<li><strong>central hub</strong>, manages all data flow in application</li>
+<li>distribute the <strong>Actions</strong> to the <strong>Stores</strong></li>
+</ul>
+</li>
+<li>Action<ul>
+<li>send an object (aka <strong>payload</strong>) contains <strong>type</strong> and <strong>data</strong> to dispatcher</li>
+<li>do not contain knowledge about how to update the stores</li>
+<li>invoke from event handlers of <strong>views</strong> or <strong>server</strong></li>
+</ul>
+</li>
+<li>Store<ul>
+<li>contain application <strong>state</strong> and <strong>logic</strong></li>
+<li>register itself with the dispatcher and provide it with a callback</li>
+<li>broadcast an event to notify the views to update</li>
+</ul>
+</li>
+<li>View (Controller-View)<ul>
+<li>get data from the stores</li>
+<li>render and pass data down to its descendants</li>
+</ul>
+</li>
+</ul>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/flux-diagram-detail.png" alt="Flux main components"><br></div>
+
+<h2 id="Compare_with_MVC">Compare with MVC</h2><p>In my opinion, I’m not in favor of camparing Flux with MVC.</p>
+<p>Flux is an architecture which help React to build client-side application. With Flux, React can be used more easily.</p>
+<ul>
+<li>store application <strong>state</strong> in Store, like Ember-data</li>
+<li>easy to <strong>communicate</strong> between React components</li>
+<li>unidirectional data flow is more <strong>predictable</strong></li>
+</ul>
+<p>However, if you want to use Flux <strong>independently</strong> without React, that maybe a little difficult. The unidirectional data flow is dependant on the core concept of React: <strong>Virtual DOM</strong>. Once user triggers an event from view, the flow cycle starts. When it reachs Store, it will emit an event to notify View to re-render, which is based on Virtual DOM. Therefore, you should implement a set of things which React already prepare for you.</p>
+<p>As for MVC, it’s also an architectural pattern, but it’s more common. One of the disadvantages about Flux is that it’s a little hard to migrate current architecture to Flux. Imagine that you have an application with one MV* framework, such as Angular or Ember. If you want to use Flux, maybe you should rebuild your whole application. It’s no need to do the migration indeed.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/mvc-diagram.png" alt="MVC work flow"><br></div>
+
+<p>What is more, I think we should compare Flux with <strong>MVVM</strong>, not MVC, because some frameworks like Backbone just implement MVC but has no data-binding, and the data-binding is the biggest difference from unidirectional data flow. So in my opinoin, it’s boring to compare pure MVC with Flux.</p>
+<div style="text-align: center;"><br><img src="/hexo-blog/img/mvvm-diagram.png" alt="MVVM work flow"><br></div>
+
+<h2 id="Best_Practise">Best Practise</h2><ul>
+<li>ajax calls should come from Action</li>
+<li>distinguish between view triggered actions and server/API triggered actions</li>
+<li>distinguish between <strong>stateful</strong> Controller-Views and <strong>stateless</strong> Views</li>
+<li><strong>Immutable</strong> data (See my another <a href="http://just4fun.github.io/hexo-blog/2015/07/18/use-immutable-js-in-react-application/">post</a>)</li>
+</ul>
+<h2 id="Demo">Demo</h2><p>I have wrote a simple demo which used React and Flux.<br>Just for fun.</p>
+<ul>
+<li>Repo: <a href="https://github.com/just4fun/classics/tree/master/repos/react_flux" target="_blank" rel="external">https://github.com/just4fun/classics/tree/master/repos/react_flux</a></li>
+<li>Live Demo: <a href="http://just4fun.github.io/classics">http://just4fun.github.io/classics</a></li>
+</ul>
+<h2 id="References">References</h2><ul>
+<li><a href="https://facebook.github.io/flux/docs/overview.html" target="_blank" rel="external">https://facebook.github.io/flux/docs/overview.html</a></li>
+<li><a href="http://fluxxor.com/what-is-flux.html" target="_blank" rel="external">http://fluxxor.com/what-is-flux.html</a></li>
+<li><a href="https://scotch.io/tutorials/getting-to-know-flux-the-react-js-architecture" target="_blank" rel="external">https://scotch.io/tutorials/getting-to-know-flux-the-react-js-architecture</a></li>
+<li><a href="http://racingtadpole.com/blog/flux-react-best-practices/" target="_blank" rel="external">http://racingtadpole.com/blog/flux-react-best-practices/</a></li>
+</ul>
+
+      
+    </div>
+    
+    <footer>
+      <div class="alignleft">
+      
+      
+  
+  <div class="tags">
+    <a href="/hexo-blog/tags/facebook/">facebook</a>, <a href="/hexo-blog/tags/flux/">flux</a>
+  </div>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+    
+  </div>
+</article>
+
+
+<section id="comment">
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer"><div class="inner"><div class="alignleft">
+  <p>
+  
+    &copy; 2015 talent
+  
+  </p>
+  <p>
+    <a href="http://github.com/willerce/hexo-theme-noderce">Noderce</a> Theme By <a href="http://willerce.com" >willerce</a>
+  </p>
+
+</div>
+<div class="clearfix"></div>
+
+<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<span id="busuanzi_container_site_pv">
+  This site has been visited <strong><span id="busuanzi_value_site_pv"></span></strong> times,
+</span>
+<span id="busuanzi_container_site_uv">
+  and there has been a total of <strong><span id="busuanzi_value_site_uv"></span></strong> guests.
+</span>
+</div></footer>
+  <script type="text/javascript">
+
+var disqus_shortname = 'talent';
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+
+</script>
+
+</body>
+</html>

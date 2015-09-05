@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>just4fun › The difference between :nth-child and :nth-of-type</title>
+  <meta name="author" content="talent">
+  
+  <meta name="description" content="Just few days ago, when I wanna implement row stripping in a table, I still add class=&amp;#39;odd&amp;#39; to alternative rows via javascript, and give the color in the css class. It’s a little bit sad for a F2E. :(">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="The difference between :nth-child and :nth-of-type"/>
+  <meta property="og:site_name" content="just4fun"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/hexo-blog/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link rel="alternate" href="/hexo-blog/atom.xml" title="just4fun" type="application/atom+xml">
+  <link rel="stylesheet" href="/hexo-blog/css/style.css" media="screen" type="text/css">
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59840825-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+
+<body>
+  <header id="header"><div class="meta inner">
+  <h1><a href="/hexo-blog/">just4fun</a></h1>
+  <h2><a href="/hexo-blog/"></a></h2>
+  <nav id="main-nav">
+    <ul>
+      
+      <li><a href="/hexo-blog/archives">Archives</a></li>
+      
+      <li><a href="/hexo-blog/links">Links</a></li>
+      
+      <li><a href="/hexo-blog/atom.xml">Feed</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">The difference between :nth-child and :nth-of-type</h1>
+  
+
+      
+      <time datetime="2014-12-14T15:15:10.000Z">Dec 14 2014</time>
+      
+    </header>
+    <div class="entry">
+      
+        <p>Just few days ago, when I wanna implement row stripping in a table, I still add <code>class=&#39;odd&#39;</code> to alternative rows via javascript, and give the color in the css class. It’s a little bit sad for a F2E. :(</p>
+<a id="more"></a>
+<p>In fact, there are pesudo class selectors in css3 which can easily implement row stripping, and the most useful selectors are <code>:nth-child</code> and <code>:nth-of-type</code>.</p>
+<p>It seems that the two selectors are similar in some situations, but there is exact difference between them. See two examples given in <a href="http://css-tricks.com/the-difference-between-nth-child-and-nth-of-type/" target="_blank" rel="external">css-tricks</a> below:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;section&#62;&#10;  &#60;p&#62;Little&#60;/p&#62;&#10;  &#60;p&#62;Piggy&#60;/p&#62;    &#60;!-- Want this one --&#62;&#10;&#60;/section&#62;</span><br></pre></td></tr></table></figure>
+<p>and we use the two selectors:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p:nth-child(2) &#123; color: red; &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">p:nth-of-type(2) &#123; color: red; &#125;</span><br></pre></td></tr></table></figure>
+<p>As we expected, they will do same thing.</p>
+<p>Let’s see another example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;section&#62;&#10;  &#60;h1&#62;Words&#60;/h1&#62;&#10;  &#60;p&#62;Little&#60;/p&#62;&#10;  &#60;p&#62;Piggy&#60;/p&#62;    &#60;!-- Want this one --&#62;&#10;&#60;/section&#62;</span><br></pre></td></tr></table></figure>
+<p>:nth-of-type will match ‘Piggy’ element correctly and :nth-child will <strong>NOT</strong> works(it will match the ‘Little’ element).</p>
+<p>Because <code>p:nth-child(2)</code> means that, the matched item must be the second child of its parent and what is more, the child must be p element.<br>However, <code>p:nth-of-type(2)</code> just means please select the second p element of its parent.</p>
+<p>In other words, <code>:nth-child</code> is more conditional.</p>
+<p>Besides, there is another situation which I want to use :nth-child and :nth-of-type to implement, but both of them are not fit for it. See a example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#60;ul&#62;&#10;  &#60;li&#62;odd&#60;/li&#62;&#10;  &#60;li&#62;&#60;/li&#62;&#10;  &#60;li&#62;odd&#60;/li&#62;&#10;  &#60;li&#62;&#10;    &#60;ul&#62;&#10;      &#60;li&#62;&#60;/li&#62;&#10;      &#60;li&#62;odd&#60;/li&#62;&#10;      &#60;li&#62;&#60;/li&#62;&#10;    &#60;/ul&#62;&#10;  &#60;/li&#62;&#10;&#60;/ul&#62;</span><br></pre></td></tr></table></figure>
+<p>We want to change the color of these ‘odd’ elements, which will render the parent ‘ul’ as a row stripping tree, so we set <code>li:nth-child(odd)</code> and <code>li:nth-of-type(odd)</code> to it.</p>
+<p>However, the first two ‘odd’ will be changed to another color as expected, but the last which in the child ‘ul’ element will not be changed. The elements beside it will be matched instead.</p>
+<p>Because the two pesudo class selectors can only work in same level, which means if there is a child element, the index of the first child of this element will be recounted.</p>
+<p>To see actual examples, there is a <a href="http://css-tricks.com/examples/nth-child-tester/" target="_blank" rel="external">:nth Tester</a> for you.</p>
+
+      
+    </div>
+    
+    <footer>
+      <div class="alignleft">
+      
+      
+  
+  <div class="tags">
+    <a href="/hexo-blog/tags/css/">css</a>
+  </div>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+    
+  </div>
+</article>
+
+
+<section id="comment">
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer"><div class="inner"><div class="alignleft">
+  <p>
+  
+    &copy; 2015 talent
+  
+  </p>
+  <p>
+    <a href="http://github.com/willerce/hexo-theme-noderce">Noderce</a> Theme By <a href="http://willerce.com" >willerce</a>
+  </p>
+
+</div>
+<div class="clearfix"></div>
+
+<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<span id="busuanzi_container_site_pv">
+  This site has been visited <strong><span id="busuanzi_value_site_pv"></span></strong> times,
+</span>
+<span id="busuanzi_container_site_uv">
+  and there has been a total of <strong><span id="busuanzi_value_site_uv"></span></strong> guests.
+</span>
+</div></footer>
+  <script type="text/javascript">
+
+var disqus_shortname = 'talent';
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+
+</script>
+
+</body>
+</html>

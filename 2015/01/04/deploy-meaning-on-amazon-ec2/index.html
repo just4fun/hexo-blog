@@ -1,0 +1,162 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>just4fun › Deploy meaning on Amazon EC2</title>
+  <meta name="author" content="talent">
+  
+  <meta name="description" content="meaning is a mini blogging platform inspired by MEAN.JS(MongoDB, Express, AngularJS, and Node.js), and I will take notes here about how I deploy it on Amazon EC2.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Deploy meaning on Amazon EC2"/>
+  <meta property="og:site_name" content="just4fun"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/hexo-blog/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link rel="alternate" href="/hexo-blog/atom.xml" title="just4fun" type="application/atom+xml">
+  <link rel="stylesheet" href="/hexo-blog/css/style.css" media="screen" type="text/css">
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59840825-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+
+<body>
+  <header id="header"><div class="meta inner">
+  <h1><a href="/hexo-blog/">just4fun</a></h1>
+  <h2><a href="/hexo-blog/"></a></h2>
+  <nav id="main-nav">
+    <ul>
+      
+      <li><a href="/hexo-blog/archives">Archives</a></li>
+      
+      <li><a href="/hexo-blog/links">Links</a></li>
+      
+      <li><a href="/hexo-blog/atom.xml">Feed</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">Deploy meaning on Amazon EC2</h1>
+  
+
+      
+      <time datetime="2015-01-04T14:02:47.000Z">Jan 4 2015</time>
+      
+    </header>
+    <div class="entry">
+      
+        <p><a href="https://github.com/just4fun/meaning" target="_blank" rel="external">meaning</a> is a mini blogging platform inspired by MEAN.JS(MongoDB, Express, AngularJS, and Node.js), and I will take notes here about how I deploy it on <a href="http://aws.amazon.com/ec2/" target="_blank" rel="external">Amazon EC2</a>.</p>
+<a id="more"></a>
+<h3 id="Amazon_EC2">Amazon EC2</h3><p>First of all, you should pay for an Amazon Machine Image to launch an instance.<br>I choose <code>Ubuntu</code> and what is more, I buy an extra <a href="http://aws.amazon.com/ec2/purchasing-options/reserved-instances/" target="_blank" rel="external">Reserved Instance</a> to receive a discount on my instance usage compared to running On-Demand instances.<br>You can know more about <code>Reserved Instance</code> <a href="http://blog.cloudability.com/4-things-youre-getting-wrong-aws-reserved-instance-application/" target="_blank" rel="external">here</a>.</p>
+<h3 id="Release">Release</h3><p>Now, we should release project to get the released code which will be deployed to production.<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ grunt build -release</span><br></pre></td></tr></table></figure></p>
+<p>And the <code>dist</code> folder contains all the released files.</p>
+<h3 id="FTP">FTP</h3><p>For Windows, <a href="https://filezilla-project.org/" target="_blank" rel="external">FileZilla</a> is a nice choice for FTP solution.<br>And for Mac, I like <a href="http://panic.com/transmit/" target="_blank" rel="external">Transmit</a>.</p>
+<p>First, copy your Amazon EC2 .pem file to your local ssh directory ~/.ssh.<br>Next, open ~/.ssh/config and add extra line to let your app know the PEM, for example:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">IdentityFile &#34;~/.ssh/just4fun.pem&#34;</span><br></pre></td></tr></table></figure></p>
+<p>At last, save the config changes and alter the permissions of the PEM file to 700:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ chmod <span class="number">700</span> ~/.ssh/just4fun.pem</span><br></pre></td></tr></table></figure></p>
+<p>Try command below to test whether the PEM file works:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -i ~/.ssh/just4fun.pem root@your_amazon_server</span><br></pre></td></tr></table></figure></p>
+<p>When we connect our server successfully, we should create a virtual host which will contains the released files:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir /var/www/just4fun</span><br></pre></td></tr></table></figure></p>
+<p>Then copy directories and files to the virtual host which we created just now:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/dist/client</span><br><span class="line">/dist/server</span><br><span class="line">/package.json</span><br></pre></td></tr></table></figure></p>
+<p>Tap commnd below to install the node dependencies:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install -production</span><br></pre></td></tr></table></figure></p>
+<p>At last we get directory structure like below:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/var/www/just4fun&#10;  --client&#10;  --server&#10;  --package.json&#10;  --node_modules</span><br></pre></td></tr></table></figure></p>
+<h3 id="DB">DB</h3><p>We use <a href="http://www.mongodb.org/" target="_blank" rel="external">MongoDB</a> in meaning and there is a <a href="http://www.mongodbspain.com/en/2014/08/30/install-mongodb-on-ubuntu-14-04/" target="_blank" rel="external">post</a> about how to install MongoDB on Ubuntu(14.04) for reference. Or you can visit official site to find the installation.</p>
+<h3 id="Web_Server">Web Server</h3><p>I previously use <a href="http://httpd.apache.org/" target="_blank" rel="external">Apache</a>, and I changed it to <a href="http://wiki.nginx.org/Main" target="_blank" rel="external">nginx</a> now.<br>In order to install Nginx we execute:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ apt-get install nginx</span><br></pre></td></tr></table></figure></p>
+<p>Then create a virtual host configuration file in /etc/nginx/sites-available, such as <code>/etc/nginx/sites-available/just4fun</code>.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">server &#123;&#10;  listen 80 default_server;&#10;  listen [::]:80 default_server ipv6only=on;&#10;  root /var/www/just4fun/client;&#10;  index index.html index.htm;&#10;&#10;  # Make site accessible from http://localhost/&#10;  server_name talent-is.me;&#10;&#10;  location / &#123;&#10;    # First attempt to serve request as file, then&#10;    # as directory, then fall back to displaying a 404.&#10;    rewrite ^/admin/?$ /admin/admin-index.html break;&#10;    rewrite ^/login/?$ /admin/admin-login.html break;&#10;    try_files $uri $uri/ =404;&#10;    # Uncomment to enable naxsi on this location&#10;    # include /etc/nginx/naxsi.rules&#10;  &#125;&#10;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>Next, we should disable the default vhost:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm /etc/nginx/sites-enabled/default</span><br></pre></td></tr></table></figure></p>
+<p>And enable our virtual host:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ln -s /etc/nginx/sites-available/just4fun /etc/nginx/sites-enabled/just4fun</span><br></pre></td></tr></table></figure></p>
+<p>At last, restart nginx with new configuration:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service nginx restart</span><br></pre></td></tr></table></figure></p>
+<p>That’s all. :)</p>
+
+      
+    </div>
+    
+    <footer>
+      <div class="alignleft">
+      
+      
+  
+  <div class="tags">
+    <a href="/hexo-blog/tags/ec2/">ec2</a>, <a href="/hexo-blog/tags/mongodb/">mongodb</a>, <a href="/hexo-blog/tags/nginx/">nginx</a>, <a href="/hexo-blog/tags/transmit/">transmit</a>
+  </div>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+    
+  </div>
+</article>
+
+
+<section id="comment">
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer"><div class="inner"><div class="alignleft">
+  <p>
+  
+    &copy; 2015 talent
+  
+  </p>
+  <p>
+    <a href="http://github.com/willerce/hexo-theme-noderce">Noderce</a> Theme By <a href="http://willerce.com" >willerce</a>
+  </p>
+
+</div>
+<div class="clearfix"></div>
+
+<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<span id="busuanzi_container_site_pv">
+  This site has been visited <strong><span id="busuanzi_value_site_pv"></span></strong> times,
+</span>
+<span id="busuanzi_container_site_uv">
+  and there has been a total of <strong><span id="busuanzi_value_site_uv"></span></strong> guests.
+</span>
+</div></footer>
+  <script type="text/javascript">
+
+var disqus_shortname = 'talent';
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+
+</script>
+
+</body>
+</html>

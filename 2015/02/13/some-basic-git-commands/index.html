@@ -1,0 +1,144 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>just4fun › Some basic Git commands</title>
+  <meta name="author" content="talent">
+  
+  <meta name="description" content="Record some basic Git commands here for later reference.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Some basic Git commands"/>
+  <meta property="og:site_name" content="just4fun"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/hexo-blog/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link rel="alternate" href="/hexo-blog/atom.xml" title="just4fun" type="application/atom+xml">
+  <link rel="stylesheet" href="/hexo-blog/css/style.css" media="screen" type="text/css">
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59840825-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+
+<body>
+  <header id="header"><div class="meta inner">
+  <h1><a href="/hexo-blog/">just4fun</a></h1>
+  <h2><a href="/hexo-blog/"></a></h2>
+  <nav id="main-nav">
+    <ul>
+      
+      <li><a href="/hexo-blog/archives">Archives</a></li>
+      
+      <li><a href="/hexo-blog/links">Links</a></li>
+      
+      <li><a href="/hexo-blog/atom.xml">Feed</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">Some basic Git commands</h1>
+  
+
+      
+      <time datetime="2015-02-13T13:11:12.000Z">Feb 13 2015</time>
+      
+    </header>
+    <div class="entry">
+      
+        <p>Record some basic Git commands here for later reference.</p>
+<a id="more"></a>
+<h3 id="Stashing">Stashing</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ git stash                         <span class="comment"># stash half-done code into stack except untracked files</span></span><br><span class="line">$ git stash -u                      <span class="comment"># stash any changed files</span></span><br><span class="line">$ git stash -p                      <span class="comment"># prompt which of changes you would like to stash</span></span><br><span class="line">$ git stash branch new_branch_name  <span class="comment"># create new branch with stash and drop it from stack</span></span><br><span class="line">$</span><br><span class="line">$ git stash list                    <span class="comment"># list stored stashes</span></span><br><span class="line">$</span><br><span class="line">$ git stash apply                   <span class="comment"># apply stored stash but the file you staged before wasn’t restaged</span></span><br><span class="line">$ git stash apply --index           <span class="comment"># apply stored stash and reapply the staged changes</span></span><br><span class="line">$ git stash pop                     <span class="comment"># apply stored stash and drop it from stack immediately</span></span><br><span class="line">$</span><br><span class="line">$ git stash drop                    <span class="comment"># drop stash from stack</span></span><br><span class="line">$ git stash clear                   <span class="comment"># clear all stashes from stack</span></span><br><span class="line">$</span><br><span class="line">$ git revert HEAD                   <span class="comment"># record a new commit to revert last commit</span></span><br><span class="line">$ git revert &lt;commit&gt;               <span class="comment"># record a new commit to revert specific commit</span></span><br><span class="line">$ git cherry-pick &lt;commit&gt;          <span class="comment"># reverse to `git revert`, record a new commit to apply specific commit change</span></span><br><span class="line">$</span><br><span class="line">$ git reset --soft &lt;commit&gt;         <span class="comment"># reset to specific commit and keep the changes in index</span></span><br><span class="line">$ git reset --hard &lt;commit&gt;         <span class="comment"># reset to specific commit and discard the changes</span></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    <footer>
+      <div class="alignleft">
+      
+      
+  
+  <div class="tags">
+    <a href="/hexo-blog/tags/git/">git</a>
+  </div>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+    
+  </div>
+</article>
+
+
+<section id="comment">
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer"><div class="inner"><div class="alignleft">
+  <p>
+  
+    &copy; 2015 talent
+  
+  </p>
+  <p>
+    <a href="http://github.com/willerce/hexo-theme-noderce">Noderce</a> Theme By <a href="http://willerce.com" >willerce</a>
+  </p>
+
+</div>
+<div class="clearfix"></div>
+
+<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<span id="busuanzi_container_site_pv">
+  This site has been visited <strong><span id="busuanzi_value_site_pv"></span></strong> times,
+</span>
+<span id="busuanzi_container_site_uv">
+  and there has been a total of <strong><span id="busuanzi_value_site_uv"></span></strong> guests.
+</span>
+</div></footer>
+  <script type="text/javascript">
+
+var disqus_shortname = 'talent';
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+
+</script>
+
+</body>
+</html>
