@@ -1,5 +1,6 @@
 menu:
   Archives: /hexo-blog/archives
+  Links: /hexo-blog/links
   Feed: /hexo-blog/atom.xml
 
 excerpt_link: Read More ›
