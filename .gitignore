@@ -3,6 +3,7 @@
 .DS_Store
 db.json
 debug.log
+npm-debug.log
 
 .idea/
 node_modules/
