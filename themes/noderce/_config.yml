@@ -1,6 +1,7 @@
 menu:
   Archives: /hexo-blog/archives
   Links: /hexo-blog/links
+  About: /hexo-blog/about
   Feed: /hexo-blog/atom.xml
 
 google_analytics: UA-59840825-1
