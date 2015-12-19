@@ -12,7 +12,7 @@ In fact, there are pesudo class selectors in css3 which can easily implement row
 
 It seems that the two selectors are similar in some situations, but there is exact difference between them. See two examples given in [css-tricks](http://css-tricks.com/the-difference-between-nth-child-and-nth-of-type/) below:
 
-```
+```html
 <section>
   <p>Little</p>
   <p>Piggy</p>    <!-- Want this one -->
@@ -21,17 +21,17 @@ It seems that the two selectors are similar in some situations, but there is exa
 
 and we use the two selectors:
 
-```
+```css
 p:nth-child(2) { color: red; }
 ```
-```
+```css
 p:nth-of-type(2) { color: red; }
 ```
 As we expected, they will do same thing.
 
 Let's see another example:
 
-```
+```html
 <section>
   <h1>Words</h1>
   <p>Little</p>
@@ -48,7 +48,7 @@ In other words, `:nth-child` is more conditional.
 
 Besides, there is another situation which I want to use :nth-child and :nth-of-type to implement, but both of them are not fit for it. See a example:
 
-```
+```html
 <ul>
   <li>odd</li>
   <li></li>

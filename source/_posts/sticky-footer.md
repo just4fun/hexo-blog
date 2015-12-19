@@ -14,7 +14,7 @@ After I googled, I found there was a site which named [cssstickyfooter](http://w
 
 However, the code on the site above only apply to the specific structure:
 
-```
+```html
 <div id="wrap">
   <div id="main">
   </div>
@@ -23,7 +23,7 @@ However, the code on the site above only apply to the specific structure:
 </div>
 ```
 or
-```
+```html
 <div id="wrap">
   <div id="header">
   </div>
@@ -36,7 +36,7 @@ or
 
 And the structure of this blog like below:
 
-```
+```html
 <div id="header">
 </div>
 <div id="wrap">
@@ -53,7 +53,7 @@ At last, I found a nice solution on [bootstrap](http://getbootstrap.com/examples
 
 For example, we can just use few code below to implement sticky footer for this blog:
 
-```
+```css
 html {
   position: relative;
   min-height: 100%;

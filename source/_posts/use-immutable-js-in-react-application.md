@@ -48,19 +48,19 @@ Unfortunately, there may be two issues if we bring `PureRenderMixin` into our Ap
 > *Manage object references carelessly*
 
 I pushed some commits into the demo App mentioned in previous article. One of the commits is adding a functionality `Like`, you can click heart icon to like a book. See code [here](https://github.com/just4fun/classics/commit/c010dc4cbacc021c45594720955a73664b28deec).
-<div style='text-align: center;'>
+<div class="illustration">
 ![](/hexo-blog/img/ibook-like-functionality.jpg)
 </div>
 
 In addition, I added `debug` module to track which components will be re-render. See code [here](https://github.com/just4fun/classics/commit/f2915ad12d644f8691ab6ee309b7e8ceb1c9aedf).
 
 Now I search some books via entering keyword.
-<div style='text-align: center;'>
+<div class="illustration">
 ![](/hexo-blog/img/re-render-monitor.jpg)
 </div>
 
 Then I want to like the first book, so I click the heart icon.
-<div style='text-align: center;'>
+<div class="illustration">
 ![](/hexo-blog/img/re-render-monitor-like.jpg)
 </div>
 
@@ -123,7 +123,7 @@ As [React doc](https://facebook.github.io/react/docs/pure-render-mixin.html) men
 Immutable data structures provides you a cheap and less verbose way to track changes on objects, which is all we need to implement `shouldComponentUpdate`. Therefore, if we model props and state attributes using the abstractions provided by immutable-js we'll be able to use `PureRenderMixin` and get a nice boost in perf. See code [here](https://github.com/just4fun/classics/commit/ce3474f2b6d40a6a5c6e1e1b3d56681f5ca2b95f).
 
 Run our App again, and like the first book, then check the Chrome console.
-<div style='text-align: center;'>
+<div class="illustration">
 ![](/hexo-blog/img/re-render-monitor-immutable-like.jpg)
 </div>
 

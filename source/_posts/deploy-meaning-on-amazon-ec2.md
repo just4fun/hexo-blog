@@ -33,7 +33,7 @@ And for Mac, I like [Transmit](http://panic.com/transmit/).
 
 First, copy your Amazon EC2 .pem file to your local ssh directory ~/.ssh.
 Next, open ~/.ssh/config and add extra line to let your app know the PEM, for example:
-```
+```bash
 IdentityFile "~/.ssh/just4fun.pem"
 ```
 At last, save the config changes and alter the permissions of the PEM file to 700:
@@ -60,7 +60,7 @@ Tap commnd below to install the node dependencies:
 npm install -production
 ```
 At last we get directory structure like below:
-```
+```bash
 /var/www/just4fun
   --client
   --server
@@ -80,7 +80,7 @@ In order to install Nginx we execute:
 $ apt-get install nginx
 ```
 Then create a virtual host configuration file in /etc/nginx/sites-available, such as `/etc/nginx/sites-available/just4fun`.
-```
+```bash
 server {
   listen 80 default_server;
   listen [::]:80 default_server ipv6only=on;
@@ -102,15 +102,15 @@ server {
 }
 ```
 Next, we should disable the default vhost:
-```
+```bash
 rm /etc/nginx/sites-enabled/default
 ```
 And enable our virtual host:
-```
+```bash
 ln -s /etc/nginx/sites-available/just4fun /etc/nginx/sites-enabled/just4fun
 ```
 At last, restart nginx with new configuration:
-```
+```bash
 service nginx restart
 ```
 

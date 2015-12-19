@@ -3,7 +3,7 @@ comments: true
 
 ---
 
-<div style="text-align: center;">
+<div class="illustration">
 ![](/hexo-blog/img/pic/me.jpg)
 </div>
 

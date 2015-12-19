@@ -9,8 +9,7 @@ tags:
 [Ember.js](http://emberjs.com/) has been used in our application, and this week, I picked up a task to render a list, which seems very simple.
 
 <!-- more -->
-{% raw %}
-```
+```html
 <div class="settings-section">
   {{each organization in organizations}}
   <div class="settings-section__organization">
@@ -19,11 +18,10 @@ tags:
   {{/each}}
 </div>
 ```
-{% endraw %}
 
 As you know, Ember use [Handlebars](http://handlebarsjs.com/) to render. For visual design, the first item has no `margin-top`, and the last item has no `border-bottom`.
 
-```
+```css
 .settings-section__organization {
   margin-top: 10px;
   border-bottom: 1px solid grey;
@@ -36,7 +34,7 @@ As you know, Ember use [Handlebars](http://handlebarsjs.com/) to render. For vis
 }
 ```
 However, it **DOESN'T** work.
-```
+```html
 <div class="settings-section">
   <script id="metamorph-23-start" type="text/x-placeholder">
   <script id="metamorph-19-start" type="text/x-placeholder">
@@ -53,7 +51,7 @@ As the rendered template, Handlebars inserted marker elements into DOM, as known
 So both first element and last element are not matched as expected.
 
 Then I want to use `:first-of-type` and `:last-of-type`.
-```
+```css
 .settings-section__organization {
   margin-top: 10px;
   border-bottom: 1px solid grey;
@@ -75,7 +73,7 @@ After investigation, I found `.class:first-of-type` is not perfect for this issu
 In other words, if we add a `<p>` tag before `<div class="settings-section__organization">`, it works. But if we add a `<div>` tag with no class, it breaks down.
 
 I share this interesting issue to other F2E guys today, and one of them give me a css trick.
-```
+```css
 .settings-section__organization {
   margin-top: 0;
 }
@@ -96,7 +94,7 @@ Which means we will finally get rid of all those metamorph tags in the DOM. At t
 ### Updated few days later
 
 However, there is another approach which we can bypass the last-child issue.
-```
+```css
 .settings-section__organization {
   margin-top: 0;
 }

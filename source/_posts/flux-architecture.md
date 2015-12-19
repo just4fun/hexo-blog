@@ -35,7 +35,7 @@ An application architecture that complements React’s compassable view componen
   - get data from the stores
   - render and pass data down to its descendants
 
-<div style='text-align: center;'>
+<div class="illustration">
 ![Flux main components](/hexo-blog/img/flux-diagram-detail.png)
 </div>
 
@@ -53,13 +53,13 @@ However, if you want to use Flux **independently** without React, that maybe a l
 
 As for MVC, it's also an architectural pattern, but it's more common. One of the disadvantages about Flux is that it's a little hard to migrate current architecture to Flux. Imagine that you have an application with one MV* framework, such as Angular or Ember. If you want to use Flux, maybe you should rebuild your whole application. It's no need to do the migration indeed.
 
-<div style='text-align: center;'>
+<div class="illustration">
 ![MVC work flow](/hexo-blog/img/mvc-diagram.png)
 </div>
 
 What is more, I think we should compare Flux with **MVVM**, not MVC, because some frameworks like Backbone just implement MVC but has no data-binding, and the data-binding is the biggest difference from unidirectional data flow. So in my opinoin, it's boring to compare pure MVC with Flux.
 
-<div style='text-align: center;'>
+<div class="illustration">
 ![MVVM work flow](/hexo-blog/img/mvvm-diagram.png)
 </div>
 
