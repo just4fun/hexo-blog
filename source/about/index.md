@@ -1,5 +1,4 @@
 title: About
-comments: true
 
 ---
 
