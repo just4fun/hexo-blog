@@ -6,6 +6,9 @@ title: About
 ![](/hexo-blog/img/pic/me.jpg)
 </div>
 
+> *我活在世上，无非想要明白些道理，遇见些有趣的事。* ーー王小波
+> *今はできなくても、もう一回やってみること。もう一回やってだめなら、さらにもう一回。* ーー加藤嘉一
+
 ```javascript
 {
   'name': 'Lei(Zoro) Jiang',
