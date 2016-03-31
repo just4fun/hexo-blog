@@ -1,8 +1,9 @@
-title: Flux Architecture
+title: Flux architecture
 date: 2015-05-12 23:16:05
 tags:
 - facebook
 - flux
+- js
 
 ---
 

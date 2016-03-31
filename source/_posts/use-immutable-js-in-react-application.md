@@ -1,4 +1,4 @@
-title: "Use immutable.js in React Application"
+title: Use immutable.js in React application
 date: 2015-07-18 10:38:24
 tags:
 - immutable

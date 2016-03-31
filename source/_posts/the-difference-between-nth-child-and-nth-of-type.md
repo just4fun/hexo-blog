@@ -1,6 +1,7 @@
 title: The difference between :nth-child and :nth-of-type
 date: 2014-12-14 23:15:10
-tags: css
+tags:
+- css
 
 ---
 

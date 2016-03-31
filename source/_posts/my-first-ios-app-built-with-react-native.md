@@ -38,7 +38,7 @@ With the basic development environment, I started work on BBS features after I r
 
 Facebook just provided basic components to developers, if you need some customized features or components, you must wrote your own by creating bridge between JavaScript and Objective C. Unfortunately, I'm not familiar with it.
 
-Then I found there are already [cool components](http://www.gajotres.net/must-have-plugins-for-react-native/) in the community, most of them are still being built, so I choosed some of them.
+Then I found there are already [cool components](http://www.gajotres.net/must-have-plugins-for-react-native/) in the community, most of them are still being built, so I chose some of them.
 
 - [react-native-side-menu](https://github.com/react-native-fellowship/react-native-side-menu): for basic layout
 - [react-native-refreshable-listview](https://github.com/jsdf/react-native-refreshable-listview): for refershable listview

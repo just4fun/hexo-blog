@@ -1,6 +1,7 @@
 title: Sticky footer
 date: 2014-12-21 22:03:02
-tags: css
+tags:
+- css
 
 ---
 
