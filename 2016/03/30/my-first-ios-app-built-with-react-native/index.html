@@ -1,0 +1,200 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>just4fun › My first iOS app built with React Native</title>
+  <meta name="author" content="talent">
+  
+  <meta name="description" content="In the latter half of last year, after I created a simple books searching demo via React + Flux + Immutable.js (I also mentioned it in last two articles), I have really fallen in love with unidirectional data flow as also the amazing technology stack.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="My first iOS app built with React Native"/>
+  <meta property="og:site_name" content="just4fun"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/hexo-blog/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link rel="alternate" href="/hexo-blog/atom.xml" title="just4fun" type="application/atom+xml">
+  <link rel="stylesheet" href="/hexo-blog/css/style.css" media="screen" type="text/css">
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59840825-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+
+<body>
+  <header id="header"><div class="meta inner">
+  <h1><a href="/hexo-blog/">just4fun</a></h1>
+  <h2><a href="/hexo-blog/"></a></h2>
+  <nav id="main-nav">
+    <ul>
+      
+      <li><a href="/hexo-blog/archives">Archives</a></li>
+      
+      <li><a href="/hexo-blog/links">Links</a></li>
+      
+      <li><a href="/hexo-blog/about">About</a></li>
+      
+      <li><a href="/hexo-blog/atom.xml">Feed</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">My first iOS app built with React Native</h1>
+  
+
+      
+      <time datetime="2016-03-30T03:10:56.000Z">Mar 30 2016</time>
+      
+    </header>
+    <div class="entry">
+      
+        <p>In the latter half of last year, after I created <a href="http://just4fun.github.io/classics">a simple books searching demo</a> via React + Flux + Immutable.js (I also mentioned it in last two articles), I have really fallen in love with unidirectional data flow as also the amazing technology stack.</p>
+<a id="more"></a>
+<h2 id="Motivation">Motivation</h2><p>At that time, there is a Flux-liked architecture called <code>Redux</code> appeared in my eyes, even more surprising was that it gained lots of fans and stars in a short time (there will be another separate article for Redux). I really wanna try it to build a cool stuff with any other framework.</p>
+<p>I found there is no official app for <a href="http://bbs.uestc.edu.cn/" target="_blank" rel="external">the BBS of my university</a> (the BBS site is powerdy by Discuz!, and there is only app which converted from Discuz! site by <a href="http://www.appbyme.com/" target="_blank" rel="external">appbyme</a>), so why not build a customized app with React Native? There is almost no learning curve if you are familiar with React.</p>
+<h2 id="Infrastructure">Infrastructure</h2><p>When I started work on the basic infrastructure of the app, I had some troubles.</p>
+<ul>
+<li>Some ES6/ES7 features can not be used (I stared with React Native 0.12.0)</li>
+<li><a href="http://facebook.github.io/react-native/docs/getting-started.html" target="_blank" rel="external">Official documents</a> have no UI demostration for each component</li>
+<li>There is almost no React Native app on Github for reference in addition to some small demos</li>
+</ul>
+<p>Anyway, the hardest part is actually in the beginning.</p>
+<ul>
+<li>Bring Webpack and Babel in (<em>Unnecessary</em>)</li>
+<li>Try each component in project to see the UI and behaviour (<em>Unnecessary</em>)</li>
+<li>Why not become the reference on Github for other React Native developers? (<em>Cool</em>)</li>
+</ul>
+<p>With the basic development environment, I started work on BBS features after I read some <a href="https://github.com/reactjs/redux/tree/master/examples" target="_blank" rel="external">examples</a> of Redux.</p>
+<h2 id="Development">Development</h2><p>Facebook just provided basic components to developers, if you need some customized features or components, you must wrote your own by creating bridge between JavaScript and Objective C. Unfortunately, I’m not familiar with it.</p>
+<p>Then I found there are already <a href="http://www.gajotres.net/must-have-plugins-for-react-native/" target="_blank" rel="external">cool components</a> in the community, most of them are still being built, so I chose some of them.</p>
+<ul>
+<li><a href="https://github.com/react-native-fellowship/react-native-side-menu" target="_blank" rel="external">react-native-side-menu</a>: for basic layout</li>
+<li><a href="https://github.com/jsdf/react-native-refreshable-listview" target="_blank" rel="external">react-native-refreshable-listview</a>: for refershable listview</li>
+<li><a href="https://github.com/oblador/react-native-vector-icons" target="_blank" rel="external">react-native-vector-icons</a>: for icons in my project</li>
+</ul>
+<p>There is really no learing curve for me, just need minimal changes.</p>
+<ul>
+<li>Use tag <code>&lt;View&gt;</code> instead of <code>&lt;div&gt;</code></li>
+<li>Use Flexbox-liked layout with JS instead of CSS</li>
+</ul>
+<h2 id="Best_practise">Best practise</h2><ul>
+<li>If you use React Native &lt; 0.16.0, add <code>.babelrc</code> instead of Babel plugin in your root if you want to use more ES6/ES7 features<ul>
+<li>If you use React Native &gt;= 0.16.0, you can not use <code>decorator</code> of ES7 because of Babel 6 (refer <a href="https://phabricator.babeljs.io/T2645" target="_blank" rel="external">here</a>)</li>
+</ul>
+</li>
+<li>Refer <a href="https://github.com/facebook/react-native/tree/master/Examples/UIExplorer" target="_blank" rel="external">UIExplorer</a> example provided by React Native repo for component UI and funcationlities<ul>
+<li>It’s better to build this example on your device for consulting components usage everywhere</li>
+</ul>
+</li>
+<li>Change <code>Build Configuration</code> from <code>Debug</code> to <code>Release</code> when using offline bundle, or the performance on your device will suffer greatly</li>
+</ul>
+<h2 id="What_I_gain">What I gain</h2><ul>
+<li>67 stars &amp; 20 forks on Github (as of the article publish date)<ul>
+<li>This is my first Github repo which gained attention from other developers, they treated this project as tutorials for React Native or Redux, and even ask me for the BBS account. It encouraged me to add new features or refactor some existed code </li>
+</ul>
+</li>
+<li>Get more understanding in React<ul>
+<li>From React 0.14, it has been split into <code>react</code> and <code>react-dom</code> (refer <a href="https://facebook.github.io/react/blog/2015/10/07/react-v0.14.html#two-packages-react-and-react-dom" target="_blank" rel="external">here</a>), that said the essence of React Native is same with React, so that’s why I said “there is almost no learning curve if you are familiar with React”</li>
+</ul>
+</li>
+<li>Want to learn new skill<ul>
+<li>There is an <a href="https://github.com/facebook/react-native/issues/5616" target="_blank" rel="external">issue</a> in my project, it seems like an unsupported feature in React Native. If I get familiar with Objective C, maybe I could create a PR for React Native</li>
+</ul>
+</li>
+</ul>
+<h2 id="Repository">Repository</h2><p><a href="https://github.com/just4fun/uestc-bbs-react-native" target="_blank" rel="external">https://github.com/just4fun/uestc-bbs-react-native</a></p>
+<h2 id="Screenshot">Screenshot</h2><p><img src="https://cloud.githubusercontent.com/assets/7512625/13497473/54ac771a-e190-11e5-9a63-944ed8f836a1.gif" alt=""></p>
+
+      
+    </div>
+    
+    <footer>
+      <div class="alignleft">
+      
+      
+  
+  <div class="tags">
+    <a href="/hexo-blog/tags/app/">app</a>, <a href="/hexo-blog/tags/facebook/">facebook</a>, <a href="/hexo-blog/tags/js/">js</a>, <a href="/hexo-blog/tags/react-native/">react native</a>
+  </div>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+    
+  </div>
+</article>
+
+
+<section id="comment">
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer"><div class="inner"><div class="alignleft">
+  <p>
+  
+    &copy; 2016 talent
+  
+  </p>
+  <p>
+    <a href="http://github.com/willerce/hexo-theme-noderce">Noderce</a> Theme By <a href="http://willerce.com" >willerce</a>
+  </p>
+
+</div>
+<div class="clearfix"></div>
+
+<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<span id="busuanzi_container_site_pv">
+  This site has been visited <strong><span id="busuanzi_value_site_pv"></span></strong> times,
+</span>
+<span id="busuanzi_container_site_uv">
+  and there has been a total of <strong><span id="busuanzi_value_site_uv"></span></strong> guests.
+</span>
+</div></footer>
+  <script type="text/javascript">
+
+var disqus_shortname = 'talent';
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+
+</script>
+
+</body>
+</html>

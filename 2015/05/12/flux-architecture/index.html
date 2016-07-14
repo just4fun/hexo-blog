@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   
-  <title>just4fun › Flux Architecture</title>
+  <title>just4fun › Flux architecture</title>
   <meta name="author" content="talent">
   
   <meta name="description" content="At the end of last year, there are two interesting stuff produced by Facebook came into fashion. One is React, another is Flux.">
@@ -11,7 +11,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="Flux Architecture"/>
+  <meta property="og:title" content="Flux architecture"/>
   <meta property="og:site_name" content="just4fun"/>
 
   
@@ -47,6 +47,8 @@
       
       <li><a href="/hexo-blog/links">Links</a></li>
       
+      <li><a href="/hexo-blog/about">About</a></li>
+      
       <li><a href="/hexo-blog/atom.xml">Feed</a></li>
       
     </ul>
@@ -61,7 +63,7 @@
     <header>
       
   
-    <h1 class="title">Flux Architecture</h1>
+    <h1 class="title">Flux architecture</h1>
   
 
       
@@ -99,7 +101,7 @@
 </ul>
 </li>
 </ul>
-<div style="text-align: center;"><br><img src="/hexo-blog/img/flux-diagram-detail.png" alt="Flux main components"><br></div>
+<div class="illustration"><br><img src="/hexo-blog/img/flux-diagram-detail.png" alt="Flux main components"><br></div>
 
 <h2 id="Compare_with_MVC">Compare with MVC</h2><p>In my opinion, I’m not in favor of camparing Flux with MVC.</p>
 <p>Flux is an architecture which help React to build client-side application. With Flux, React can be used more easily.</p>
@@ -110,10 +112,10 @@
 </ul>
 <p>However, if you want to use Flux <strong>independently</strong> without React, that maybe a little difficult. The unidirectional data flow is dependant on the core concept of React: <strong>Virtual DOM</strong>. Once user triggers an event from view, the flow cycle starts. When it reachs Store, it will emit an event to notify View to re-render, which is based on Virtual DOM. Therefore, you should implement a set of things which React already prepare for you.</p>
 <p>As for MVC, it’s also an architectural pattern, but it’s more common. One of the disadvantages about Flux is that it’s a little hard to migrate current architecture to Flux. Imagine that you have an application with one MV* framework, such as Angular or Ember. If you want to use Flux, maybe you should rebuild your whole application. It’s no need to do the migration indeed.</p>
-<div style="text-align: center;"><br><img src="/hexo-blog/img/mvc-diagram.png" alt="MVC work flow"><br></div>
+<div class="illustration"><br><img src="/hexo-blog/img/mvc-diagram.png" alt="MVC work flow"><br></div>
 
 <p>What is more, I think we should compare Flux with <strong>MVVM</strong>, not MVC, because some frameworks like Backbone just implement MVC but has no data-binding, and the data-binding is the biggest difference from unidirectional data flow. So in my opinoin, it’s boring to compare pure MVC with Flux.</p>
-<div style="text-align: center;"><br><img src="/hexo-blog/img/mvvm-diagram.png" alt="MVVM work flow"><br></div>
+<div class="illustration"><br><img src="/hexo-blog/img/mvvm-diagram.png" alt="MVVM work flow"><br></div>
 
 <h2 id="Best_Practise">Best Practise</h2><ul>
 <li>ajax calls should come from Action</li>
@@ -142,7 +144,7 @@
       
   
   <div class="tags">
-    <a href="/hexo-blog/tags/facebook/">facebook</a>, <a href="/hexo-blog/tags/flux/">flux</a>
+    <a href="/hexo-blog/tags/facebook/">facebook</a>, <a href="/hexo-blog/tags/flux/">flux</a>, <a href="/hexo-blog/tags/js/">js</a>
   </div>
 
       </div>
@@ -167,7 +169,7 @@
   <footer id="footer"><div class="inner"><div class="alignleft">
   <p>
   
-    &copy; 2015 talent
+    &copy; 2016 talent
   
   </p>
   <p>

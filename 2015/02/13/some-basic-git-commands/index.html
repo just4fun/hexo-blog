@@ -47,6 +47,8 @@
       
       <li><a href="/hexo-blog/links">Links</a></li>
       
+      <li><a href="/hexo-blog/about">About</a></li>
+      
       <li><a href="/hexo-blog/atom.xml">Feed</a></li>
       
     </ul>
@@ -73,6 +75,7 @@
         <p>Record some basic Git commands here for later reference.</p>
 <a id="more"></a>
 <h3 id="Stashing">Stashing</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ git stash                         <span class="comment"># stash half-done code into stack except untracked files</span></span><br><span class="line">$ git stash -u                      <span class="comment"># stash any changed files</span></span><br><span class="line">$ git stash -p                      <span class="comment"># prompt which of changes you would like to stash</span></span><br><span class="line">$ git stash branch new_branch_name  <span class="comment"># create new branch with stash and drop it from stack</span></span><br><span class="line">$</span><br><span class="line">$ git stash list                    <span class="comment"># list stored stashes</span></span><br><span class="line">$</span><br><span class="line">$ git stash apply                   <span class="comment"># apply stored stash but the file you staged before wasn’t restaged</span></span><br><span class="line">$ git stash apply --index           <span class="comment"># apply stored stash and reapply the staged changes</span></span><br><span class="line">$ git stash pop                     <span class="comment"># apply stored stash and drop it from stack immediately</span></span><br><span class="line">$</span><br><span class="line">$ git stash drop                    <span class="comment"># drop stash from stack</span></span><br><span class="line">$ git stash clear                   <span class="comment"># clear all stashes from stack</span></span><br><span class="line">$</span><br><span class="line">$ git revert HEAD                   <span class="comment"># record a new commit to revert last commit</span></span><br><span class="line">$ git revert &lt;commit&gt;               <span class="comment"># record a new commit to revert specific commit</span></span><br><span class="line">$ git cherry-pick &lt;commit&gt;          <span class="comment"># reverse to `git revert`, record a new commit to apply specific commit change</span></span><br><span class="line">$</span><br><span class="line">$ git reset --soft &lt;commit&gt;         <span class="comment"># reset to specific commit and keep the changes in index</span></span><br><span class="line">$ git reset --hard &lt;commit&gt;         <span class="comment"># reset to specific commit and discard the changes</span></span><br></pre></td></tr></table></figure>
+
       
     </div>
     
@@ -107,7 +110,7 @@
   <footer id="footer"><div class="inner"><div class="alignleft">
   <p>
   
-    &copy; 2015 talent
+    &copy; 2016 talent
   
   </p>
   <p>

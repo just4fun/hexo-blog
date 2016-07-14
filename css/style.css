@@ -257,6 +257,9 @@ article .entry h3 {
   border-bottom: 1px dotted #ccc;
   padding: 0 0 5px 0;
 }
+article .entry .illustration {
+  text-align: center;
+}
 article .entry img,
 article .entry video {
   max-width: 100%;
@@ -415,7 +418,7 @@ article footer .tags {
   margin-bottom: 20px;
 }
 .page {
-  margin-bottom: 50px;
+  margin-bottom: 20px;
 }
 .page .entry ul {
   margin-top: 0;

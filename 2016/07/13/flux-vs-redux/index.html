@@ -1,0 +1,216 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>just4fun › Flux vs Redux</title>
+  <meta name="author" content="talent">
+  
+  <meta name="description" content="Redux is very popular in recent two years, it seems like it has become the standard architecture in React application.
+Let’s compare it with original Flux.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Flux vs Redux"/>
+  <meta property="og:site_name" content="just4fun"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/hexo-blog/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link rel="alternate" href="/hexo-blog/atom.xml" title="just4fun" type="application/atom+xml">
+  <link rel="stylesheet" href="/hexo-blog/css/style.css" media="screen" type="text/css">
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59840825-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+
+<body>
+  <header id="header"><div class="meta inner">
+  <h1><a href="/hexo-blog/">just4fun</a></h1>
+  <h2><a href="/hexo-blog/"></a></h2>
+  <nav id="main-nav">
+    <ul>
+      
+      <li><a href="/hexo-blog/archives">Archives</a></li>
+      
+      <li><a href="/hexo-blog/links">Links</a></li>
+      
+      <li><a href="/hexo-blog/about">About</a></li>
+      
+      <li><a href="/hexo-blog/atom.xml">Feed</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">Flux vs Redux</h1>
+  
+
+      
+      <time datetime="2016-07-13T07:56:34.000Z">Jul 13 2016</time>
+      
+    </header>
+    <div class="entry">
+      
+        <p><a href="https://github.com/reactjs/redux" target="_blank" rel="external">Redux</a> is very popular in recent two years, it seems like it has become the standard architecture in React application.</p>
+<p>Let’s compare it with original <a href="2015/05/12/flux-architecture/">Flux</a>.</p>
+<a id="more"></a>
+<p>As Redux <a href="http://redux.js.org/index.html" target="_blank" rel="external">official doc</a> mentioned,</p>
+<blockquote>
+<p>Redux evolves the ideas of Flux, but avoids its complexity.</p>
+</blockquote>
+<p>That being said, Redux is also utilizing <strong>unidirectional</strong> data flow.</p>
+<p><em>But what is the main difference between them?</em><br><em>And what is the complexity of Flux?</em></p>
+<p>As we know, Redux has <strong>three principles</strong>.</p>
+<ul>
+<li>Single source of truth</li>
+<li>State is read-only</li>
+<li>Changes are made with pure functions</li>
+</ul>
+<p>IMO, the main difference between Redux and Flux is mainly focused on the first one.</p>
+<h2 id="Flux_Way">Flux Way</h2><ul>
+<li><strong>Dispatcher</strong> distributes <strong>Actions</strong> to <strong>Stores</strong></li>
+<li><strong>Stores</strong> broadcast events to notify <strong>Views</strong> to update</li>
+</ul>
+<p>We noticed that <strong>Stores</strong> is plural, which means we can use multiple stores in Flux architecture.</p>
+<p>Let’s go through an example from Flux source code.</p>
+<blockquote>
+<p>Consider there is a flight destination form, which selects a default city when a country is selected.</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> flightDispatcher = <span class="keyword">new</span> Dispatcher();</span><br><span class="line"></span><br><span class="line"><span class="comment">// keeps track of which country is selected</span></span><br><span class="line"><span class="keyword">let</span> CountryStore = &#123; country: <span class="literal">null</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// keeps track of which city is selected</span></span><br><span class="line"><span class="keyword">let</span> CityStore = &#123; city: <span class="literal">null</span> &#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// keeps track of the base flight price of the selected city</span></span><br><span class="line"><span class="keyword">let</span> FlightPriceStore = &#123; price: <span class="literal">null</span> &#125;;</span><br></pre></td></tr></table></figure>
+<p>When a user changes the selected city, we dispatch the payload.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">flightDispatcher.dispatch(&#123;</span><br><span class="line">  actionType: <span class="string">'city-update'</span>,</span><br><span class="line">  selectedCity: <span class="string">'paris'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>This payload is digested by <code>CityStore</code>.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">flightDispatcher.register(<span class="function"><span class="keyword">function</span>(<span class="params">payload</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (payload.actionType === <span class="string">'city-update'</span>) &#123;</span><br><span class="line">    CityStore.city = payload.selectedCity;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>When the user selects a country, we dispatch the payload.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">flightDispatcher.dispatch(&#123;</span><br><span class="line">  actionType: <span class="string">'country-update'</span>,</span><br><span class="line">  selectedCountry: <span class="string">'australia'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>This payload is digested by <strong>BOTH</strong> stores.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CountryStore.dispatchToken = flightDispatcher.register(<span class="function"><span class="keyword">function</span>(<span class="params">payload</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (payload.actionType === <span class="string">'country-update'</span>) &#123;</span><br><span class="line">    CountryStore.country = payload.selectedCountry;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>When the callback to update <code>CountryStore</code> is registered, we save a reference to the returned token. Using this token with <code>waitFor()</code>, we can guarantee that <code>CountryStore</code> is updated before the callback that updates <code>CityStore</code> needs to query its data.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">CityStore.dispatchToken = flightDispatcher.register(<span class="function"><span class="keyword">function</span>(<span class="params">payload</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (payload.actionType === <span class="string">'country-update'</span>) &#123;</span><br><span class="line">    <span class="comment">// `CountryStore.country` may not be updated</span></span><br><span class="line">    flightDispatcher.waitFor([CountryStore.dispatchToken]);</span><br><span class="line">    <span class="comment">// `CountryStore.country` is now guaranteed to be updated</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// select the default city for the new country</span></span><br><span class="line">    CityStore.city = getDefaultCityForCountry(CountryStore.country);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>The <code>country-update</code> payload will be guaranteed to invoke the stores’ registered callbacks in order: <code>CountryStore</code>, then <code>CityStore</code>.</p>
+<hr>
+<p>You may noticed that we should do lots of stuff in Flux.</p>
+<ul>
+<li>should register callbacks both in CountryStore and CityStore to update state</li>
+<li>should register callbacks both in CountryView and CityView to update views (omitted in code above)</li>
+<li>should use <code>waitFor()</code> if we want to guarantee the update order between different stores</li>
+</ul>
+<p>IMO, these are the <strong>complexities</strong> in Flux.</p>
+<h2 id="Redux_Way">Redux Way</h2><p>In Redux, there is no Dispatcher (but there is <code>store.dispatch()</code>), moreover, there in only a <strong>SINGLE</strong> store, which holds the whole application state in a <strong>SINGLE</strong> object.</p>
+<p>Let’s update the code above in Redux approach.</p>
+<p>First, we need to create a single store with <code>reducers</code>, then register a listener on the store. The listener will rerender whole application.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> store = createStore(reducers);</span><br><span class="line">store.subscribe(render);</span><br></pre></td></tr></table></figure>
+<p>When a user changes the selected city, we dispatch the payload, but via <code>store.dispatch()</code> instead.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">store.dispatch(&#123;</span><br><span class="line">  actionType: <span class="string">'city-update'</span>,</span><br><span class="line">  selectedCity: <span class="string">'paris'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>This payload is digested by <code>CityReducer</code>.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">city</span>(<span class="params">state = &#123;&#125;, action</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (action.type) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'city-update'</span>:</span><br><span class="line">      <span class="keyword">return</span> object.assign(&#123;&#125;, state, &#123;</span><br><span class="line">        city: action.selectedCity</span><br><span class="line">      &#125;);</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">return</span> state;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>When the user selects a country, we dispatch the payload.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">store.dispatch(&#123;</span><br><span class="line">  actionType: <span class="string">'country-update'</span>,</span><br><span class="line">  selectedCountry: <span class="string">'australia'</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>This payload is <strong>ONLY</strong> digested by <code>CountryReducer</code>.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">country</span>(<span class="params">state = &#123;&#125;, action</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (action.type) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">'country-update'</span>:</span><br><span class="line">      <span class="keyword">return</span> object.assign(&#123;&#125;, state, &#123;</span><br><span class="line">        country: action.selectedCountry</span><br><span class="line">      &#125;);</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">return</span> state;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>But how can we guarantee that select a country will trigger select a default city?</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">componentWillReceiveProps(nextProps) &#123;</span><br><span class="line">  <span class="comment">// check whether there is new country selected</span></span><br><span class="line">  <span class="keyword">if</span> (nextProps.country !== <span class="keyword">this</span>.props.country) &#123;</span><br><span class="line">    store.dispatch(&#123;</span><br><span class="line">      actionType: <span class="string">'city-update'</span>,</span><br><span class="line">      selectedCity: <span class="keyword">this</span>.getDefaultCityForCountry(nextProps.country)</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Obviously, we render our whole application two times instead of using <code>waitFor()</code> in Flux to guarantee the order.</p>
+<hr>
+<p>Let’s take a look at the steps in Redux approach.</p>
+<ol>
+<li>should have CityReducer and CountryReducer to update state</li>
+<li>only need to register <strong>ONE</strong> callback on the top level store to rerender</li>
+<li>no need to guarantee order, just <strong>RERENDER</strong></li>
+</ol>
+<h2 id="Tips">Tips</h2><p>You may noticed that we can also register the callbacks on the top level in Flux for updating Views.<br>In this way, we have no need to guarantee the order, just rerender like how we did in Redux.</p>
+<p>However, there is one thing different.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">CityStore.addChangeListener(render);</span><br><span class="line">CountryStore.addChangeListener(render);</span><br><span class="line"></span><br><span class="line"><span class="comment">// if there are other stores, we should also</span></span><br><span class="line"><span class="comment">// register the render callback on them.</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// but in Redux, we only need to register one,</span></span><br><span class="line"><span class="comment">// since there is only one store holds one object.</span></span><br></pre></td></tr></table></figure>
+<p>Got <strong>simplicity</strong> of Redux now?</p>
+
+      
+    </div>
+    
+    <footer>
+      <div class="alignleft">
+      
+      
+  
+  <div class="tags">
+    <a href="/hexo-blog/tags/flux/">flux</a>, <a href="/hexo-blog/tags/js/">js</a>, <a href="/hexo-blog/tags/redux/">redux</a>
+  </div>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+    
+  </div>
+</article>
+
+
+<section id="comment">
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer"><div class="inner"><div class="alignleft">
+  <p>
+  
+    &copy; 2016 talent
+  
+  </p>
+  <p>
+    <a href="http://github.com/willerce/hexo-theme-noderce">Noderce</a> Theme By <a href="http://willerce.com" >willerce</a>
+  </p>
+
+</div>
+<div class="clearfix"></div>
+
+<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<span id="busuanzi_container_site_pv">
+  This site has been visited <strong><span id="busuanzi_value_site_pv"></span></strong> times,
+</span>
+<span id="busuanzi_container_site_uv">
+  and there has been a total of <strong><span id="busuanzi_value_site_uv"></span></strong> guests.
+</span>
+</div></footer>
+  <script type="text/javascript">
+
+var disqus_shortname = 'talent';
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+
+</script>
+
+</body>
+</html>
