@@ -16,8 +16,8 @@
   
   <entry>
     <title><![CDATA[Flux vs Redux]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2016/07/13/flux-vs-redux/"/>
-    <id>http://just4fun.github.io/hexo-blog/2016/07/13/flux-vs-redux/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2016/07/13/12.flux-vs-redux/"/>
+    <id>http://just4fun.github.io/hexo-blog/2016/07/13/12.flux-vs-redux/</id>
     <published>2016-07-13T07:56:34.000Z</published>
     <updated>2016-07-14T16:19:29.000Z</updated>
     <content type="html"><![CDATA[<p><a href="https://github.com/reactjs/redux" target="_blank" rel="external">Redux</a> is very popular in recent two years, it seems like it has become the standard architecture in React application.</p>
@@ -108,8 +108,8 @@
   
   <entry>
     <title><![CDATA[My first iOS app built with React Native]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2016/03/30/my-first-ios-app-built-with-react-native/"/>
-    <id>http://just4fun.github.io/hexo-blog/2016/03/30/my-first-ios-app-built-with-react-native/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2016/03/30/11.my-first-ios-app-built-with-react-native/"/>
+    <id>http://just4fun.github.io/hexo-blog/2016/03/30/11.my-first-ios-app-built-with-react-native/</id>
     <published>2016-03-30T03:10:56.000Z</published>
     <updated>2016-04-01T05:12:51.000Z</updated>
     <content type="html"><![CDATA[<p>In the latter half of last year, after I created <a href="http://just4fun.github.io/classics">a simple books searching demo</a> via React + Flux + Immutable.js (I also mentioned it in last two articles), I have really fallen in love with unidirectional data flow as also the amazing technology stack.</p>
@@ -186,8 +186,8 @@
   
   <entry>
     <title><![CDATA[Use immutable.js in React application]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2015/07/18/use-immutable-js-in-react-application/"/>
-    <id>http://just4fun.github.io/hexo-blog/2015/07/18/use-immutable-js-in-react-application/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2015/07/18/10.use-immutable-js-in-react-application/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/07/18/10.use-immutable-js-in-react-application/</id>
     <published>2015-07-18T02:38:24.000Z</published>
     <updated>2016-04-01T05:12:51.000Z</updated>
     <content type="html"><![CDATA[<p>In <a href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/">previous article</a>, we got a general understanding about Flux architecture. And in <a href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/#Best_Practise">Best Practise</a> section, I have mentioned <code>Immutable data</code> which I haven’t take a look yet. Now it’s time to dig into it.</p>
@@ -250,8 +250,8 @@
   
   <entry>
     <title><![CDATA[Flux architecture]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/"/>
-    <id>http://just4fun.github.io/hexo-blog/2015/05/12/flux-architecture/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2015/05/12/9.flux-architecture/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/05/12/9.flux-architecture/</id>
     <published>2015-05-12T15:16:05.000Z</published>
     <updated>2016-04-01T05:12:51.000Z</updated>
     <content type="html"><![CDATA[<p>At the end of last year, there are two interesting stuff produced by Facebook came into fashion. One is <a href="http://facebook.github.io/react/" target="_blank" rel="external">React</a>, another is <a href="http://facebook.github.io/flux/" target="_blank" rel="external">Flux</a>.</p>
@@ -332,8 +332,8 @@
   
   <entry>
     <title><![CDATA[What the hell is F2E]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2015/04/29/what-the-hell-is-f2e/"/>
-    <id>http://just4fun.github.io/hexo-blog/2015/04/29/what-the-hell-is-f2e/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2015/04/29/8.what-the-hell-is-f2e/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/04/29/8.what-the-hell-is-f2e/</id>
     <published>2015-04-29T09:30:19.000Z</published>
     <updated>2015-12-20T23:31:57.000Z</updated>
     <content type="html"><![CDATA[<p>As a F2E (Front End Engineer), there is a big headache that how should I explain to others what is F2E or what F2E do.</p>
@@ -376,8 +376,8 @@
   
   <entry>
     <title><![CDATA[Some basic Git commands]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2015/02/13/some-basic-git-commands/"/>
-    <id>http://just4fun.github.io/hexo-blog/2015/02/13/some-basic-git-commands/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2015/02/13/7.some-basic-git-commands/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/02/13/7.some-basic-git-commands/</id>
     <published>2015-02-13T13:11:12.000Z</published>
     <updated>2015-12-20T23:31:57.000Z</updated>
     <content type="html"><![CDATA[<p>Record some basic Git commands here for later reference.</p>
@@ -395,8 +395,8 @@
   
   <entry>
     <title><![CDATA[How router of Single Page Application works]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2015/02/08/how-router-of-single-page-application-works/"/>
-    <id>http://just4fun.github.io/hexo-blog/2015/02/08/how-router-of-single-page-application-works/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2015/02/08/6.how-router-of-single-page-application-works/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/02/08/6.how-router-of-single-page-application-works/</id>
     <published>2015-02-08T09:04:39.000Z</published>
     <updated>2016-04-01T05:12:51.000Z</updated>
     <content type="html"><![CDATA[<p>In some javascript frameworks (<a href="http://backbonejs.org/" target="_blank" rel="external">Backbone</a>, <a href="http://emberjs.com/" target="_blank" rel="external">Ember</a>, <a href="https://angularjs.org/" target="_blank" rel="external">Angular</a>, etc.), there is <code>Router</code>, which provide us ability to manage states in our applications.</p>
@@ -440,8 +440,8 @@
   
   <entry>
     <title><![CDATA[CSS3 selector issue with Ember metamorph]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2015/02/06/css3-selector-issue-with-ember-metamorph/"/>
-    <id>http://just4fun.github.io/hexo-blog/2015/02/06/css3-selector-issue-with-ember-metamorph/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2015/02/06/5.css3-selector-issue-with-ember-metamorph/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/02/06/5.css3-selector-issue-with-ember-metamorph/</id>
     <published>2015-02-06T14:28:56.000Z</published>
     <updated>2015-12-20T23:31:57.000Z</updated>
     <content type="html"><![CDATA[<p><a href="http://emberjs.com/" target="_blank" rel="external">Ember.js</a> has been used in our application, and this week, I picked up a task to render a list, which seems very simple.</p>
@@ -488,8 +488,8 @@
   
   <entry>
     <title><![CDATA[Deploy meaning on Amazon EC2]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2015/01/04/deploy-meaning-on-amazon-ec2/"/>
-    <id>http://just4fun.github.io/hexo-blog/2015/01/04/deploy-meaning-on-amazon-ec2/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2015/01/04/4.deploy-meaning-on-amazon-ec2/"/>
+    <id>http://just4fun.github.io/hexo-blog/2015/01/04/4.deploy-meaning-on-amazon-ec2/</id>
     <published>2015-01-04T14:02:47.000Z</published>
     <updated>2015-12-20T23:31:57.000Z</updated>
     <content type="html"><![CDATA[<p><a href="https://github.com/just4fun/meaning" target="_blank" rel="external">meaning</a> is a mini blogging platform inspired by MEAN.JS(MongoDB, Express, AngularJS, and Node.js), and I will take notes here about how I deploy it on <a href="http://aws.amazon.com/ec2/" target="_blank" rel="external">Amazon EC2</a>.</p>
@@ -530,8 +530,8 @@
   
   <entry>
     <title><![CDATA[Sticky footer]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2014/12/21/sticky-footer/"/>
-    <id>http://just4fun.github.io/hexo-blog/2014/12/21/sticky-footer/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2014/12/21/3.sticky-footer/"/>
+    <id>http://just4fun.github.io/hexo-blog/2014/12/21/3.sticky-footer/</id>
     <published>2014-12-21T14:03:02.000Z</published>
     <updated>2016-04-01T05:12:51.000Z</updated>
     <content type="html"><![CDATA[<p>When I built up this blog via <a href="https://github.com/hexojs/hexo" target="_blank" rel="external">hexo</a> and themed it via <a href="https://github.com/willerce/hexo-theme-noderce" target="_blank" rel="external">noderce</a>, I found there was a bug on UI – The footer of the page wasn’t stuck to the bottom because of the thin on content.</p>
@@ -560,8 +560,8 @@
   
   <entry>
     <title><![CDATA[The difference between :nth-child and :nth-of-type]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2014/12/14/the-difference-between-nth-child-and-nth-of-type/"/>
-    <id>http://just4fun.github.io/hexo-blog/2014/12/14/the-difference-between-nth-child-and-nth-of-type/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2014/12/14/2.the-difference-between-nth-child-and-nth-of-type/"/>
+    <id>http://just4fun.github.io/hexo-blog/2014/12/14/2.the-difference-between-nth-child-and-nth-of-type/</id>
     <published>2014-12-14T15:15:10.000Z</published>
     <updated>2016-04-01T05:12:51.000Z</updated>
     <content type="html"><![CDATA[<p>Just few days ago, when I wanna implement row stripping in a table, I still add <code>class=&#39;odd&#39;</code> to alternative rows via javascript, and give the color in the css class. It’s a little bit sad for a F2E. :(</p>
@@ -596,8 +596,8 @@
   
   <entry>
     <title><![CDATA[Hello, hexo.]]></title>
-    <link href="http://just4fun.github.io/hexo-blog/2014/12/14/hello-hexo/"/>
-    <id>http://just4fun.github.io/hexo-blog/2014/12/14/hello-hexo/</id>
+    <link href="http://just4fun.github.io/hexo-blog/2014/12/14/1.hello-hexo/"/>
+    <id>http://just4fun.github.io/hexo-blog/2014/12/14/1.hello-hexo/</id>
     <published>2014-12-14T05:45:55.000Z</published>
     <updated>2016-04-01T05:12:51.000Z</updated>
     <content type="html"><![CDATA[<p>Hello, hexo.</p>
