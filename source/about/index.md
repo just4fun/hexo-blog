@@ -12,7 +12,7 @@ title: About
 ```javascript
 {
   'name': 'Lei(Zoro) Jiang',
-  'age': 27,
+  'age': 0,
   'height': 182,
   'education': 'UESTC',
   'location': 'Chengdu, Sichuan, China',
@@ -106,3 +106,17 @@ title: About
   ]
 }
 ```
+
+<script>
+  function calculateAge(birthdayDate) {
+    var ageDifMs = Date.now() - birthdayDate.getTime();
+    var ageDate = new Date(ageDifMs);
+    return Math.abs(ageDate.getUTCFullYear() - 1970);
+  }
+
+  (function() {
+    // should ensure `age` field is the first number type in resume
+    var age = document.querySelector('figure.javascript .line .number');
+    age.innerHTML = calculateAge(new Date('1988-01-25'));
+  })();
+</script>
