@@ -6,8 +6,18 @@ comments: false
 - [ilucas](http://lucaszheng.github.io)
 ```javascript
 {
-  'name': 'Lucas',
-  'relationship': 'colleague',
-  'blog': 'lucaszheng.github.io'
+  data: {
+    id: '1',
+    type: 'js-guys',
+    attributes: {
+      name: 'Qiang(Lucas) Zheng'
+    },
+    relationships: {
+      data: {
+        id: '1',
+        type: 'workmates'
+      }
+    }
+  }
 }
 ```
