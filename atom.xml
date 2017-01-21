@@ -4,7 +4,7 @@
   
   <link href="/hexo-blog/atom.xml" rel="self"/>
   <link href="http://just4fun.github.io/hexo-blog/"/>
-  <updated>2016-07-14T16:19:29.000Z</updated>
+  <updated>2017-01-21T10:42:20.000Z</updated>
   <id>http://just4fun.github.io/hexo-blog/</id>
   
   <author>
@@ -13,6 +13,64 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Reloading in Ember findAll and findRecord]]></title>
+    <link href="http://just4fun.github.io/hexo-blog/2017/01/21/13-reloading-in-ember-findall-and-findrecord/"/>
+    <id>http://just4fun.github.io/hexo-blog/2017/01/21/13-reloading-in-ember-findall-and-findrecord/</id>
+    <published>2017-01-21T09:46:08.000Z</published>
+    <updated>2017-01-21T10:42:20.000Z</updated>
+    <content type="html"><![CDATA[<p>Recently, QA reported two issues that which seems a little weird. After some investigations, I found they’re caused by my lack of knowledge of Ember Data APIs.</p>
+<a id="more"></a>
+<h2 id="Background">Background</h2><ul>
+<li><strong>We always got old records in Ember Data even it seems we have already sent new request and got new records from API</strong></li>
+</ul>
+<p>In our application, there is a dropdown list at the top of screen which contains many <code>branches</code>. Once we select a new branch, we will send a request.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">didReceiveAttrs() &#123;</span><br><span class="line">  <span class="keyword">this</span>._super(...arguments);</span><br><span class="line">  <span class="keyword">this</span>.setupFilterGroups();</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">setupFilterGroups() &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  get(<span class="keyword">this</span>, <span class="string">'store'</span>).findAll(<span class="string">'zipcodeFilter'</span>).then(zipcodes =&gt; &#123;</span><br><span class="line">    <span class="comment">// we always got old `zipcodes` for last branch even we switched to a new branch</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>After I dug into <a href="http://emberjs.com/api/data/classes/DS.Store.html#method_findAll" target="_blank" rel="external">documentation</a> for <code>findAll</code>,</p>
+<blockquote>
+<p><code>findAll</code> asks the adapter’s <code>findAll</code> method to find the records for the given type, and returns a promise which will resolve with all records of this type present in the store, even if the adapter only returns a subset of them.</p>
+</blockquote>
+<p>In addition,</p>
+<blockquote>
+<p>When the returned promise resolves depends on the reload behavior, configured via the passed <code>options</code> hash and the result of the adapter’s <code>shouldReloadAll</code> method.</p>
+</blockquote>
+<p>There is also an example,</p>
+<blockquote>
+<p>If <code>{ reload: true }</code> is passed or <code>adapter.shouldReloadAll</code> evaluates to <code>true</code>, then the returned promise resolves once the adapter returns data, regardless if there are already records in the store:</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">store.push(&#123;</span><br><span class="line">  data: &#123;</span><br><span class="line">    id: <span class="string">'first'</span>,</span><br><span class="line">    type: <span class="string">'author'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// adapter#findAll resolves with</span></span><br><span class="line"><span class="comment">// [</span></span><br><span class="line"><span class="comment">//   &#123;</span></span><br><span class="line"><span class="comment">//     id: 'second',</span></span><br><span class="line"><span class="comment">//     type: 'author'</span></span><br><span class="line"><span class="comment">//   &#125;</span></span><br><span class="line"><span class="comment">// ]</span></span><br><span class="line"></span><br><span class="line">store.findAll(<span class="string">'author'</span>, &#123; reload: <span class="literal">true</span> &#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">authors</span>) </span>&#123;</span><br><span class="line">  authors.getEach(<span class="string">"id"</span>); <span class="comment">// ['first', 'second']</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>If no reload is indicated via the abovementioned ways, then the promise immediately resolves with all the records currently loaded in the store.</p>
+</blockquote>
+<p>That being said, without <code>reload: true</code>, <code>findAll</code> will always be resolved immediately if there are already records in the store, which will cause current issue.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">didReceiveAttrs() &#123;</span><br><span class="line">  <span class="keyword">this</span>._super(...arguments);</span><br><span class="line">  <span class="keyword">this</span>.setupFilterGroups();</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">setupFilterGroups() &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  get(<span class="keyword">this</span>, <span class="string">'store'</span>).findAll(<span class="string">'zipcodeFilter'</span>, &#123; reload: <span class="literal">true</span> &#125;).then(zipcodes =&gt; &#123;</span><br><span class="line">    <span class="comment">// it WORKS now, `zipcodes` will always be new records from API</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>A button will always be enabled before all the requests it depends on resolved</strong></li>
+</ul>
+<p>There is a button in our application, we introduced <a href="http://ember-concurrency.com/" target="_blank" rel="external"><code>ember-concurrency</code></a> and bound <code>disabled=isProcessing</code> to it with three <code>task</code>s.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">createFollowup: task(<span class="function"><span class="keyword">function</span> *(<span class="params">followupStatus, followupDate</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;),</span><br><span class="line"></span><br><span class="line">clearFollowup: task(<span class="function"><span class="keyword">function</span> *(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;),</span><br><span class="line"></span><br><span class="line">createContactAttempt: task(<span class="function"><span class="keyword">function</span> *(<span class="params">subject, notes, contactStatus</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">this</span>.store.findRecord(<span class="string">'member'</span>, <span class="keyword">this</span>.get(<span class="string">'id'</span>));</span><br><span class="line">&#125;),</span><br><span class="line"></span><br><span class="line">isProcessing: Ember.computed.or(<span class="string">'createFollowup.isRunning'</span>, <span class="string">'clearFollowup.isRunning'</span>, <span class="string">'createContactAttempt.isRunning'</span>)</span><br></pre></td></tr></table></figure>
+<p>However, the button is still disabled before <code>createFollowup</code> and <code>clearFollowup</code> resolved, but it will be enabled once both of them finished without <code>createContactAttempt</code> being resolved.</p>
+<p>The root cause is same as previous case,</p>
+<blockquote>
+<p>If the record is not yet available, the store will ask the adapter’s <code>find</code> method to find the necessary data. If the record is already present in the store, it depends on the reload behavior <em>when</em> the returned promise resolves.</p>
+</blockquote>
+<p>That said, if there is no <code>reload: true</code>, <code>findRecord</code> will resolve the old value from Ember Data first, which will lead <code>createContactAttempt.isRunning</code> to be <code>false</code> even <code>member</code> is still being fetched.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">createContactAttempt: task(<span class="function"><span class="keyword">function</span> *(<span class="params">subject, notes, contactStatus</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// it WORKS now, `createContactAttempt.isRunning` always be `true` before all `task`s resolved</span></span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">this</span>.store.findRecord(<span class="string">'member'</span>, <span class="keyword">this</span>.get(<span class="string">'id'</span>), &#123; reload: <span class="literal">true</span> &#125;);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="Conclusion">Conclusion</h2><p>Like the Ember official website mentioned,</p>
+<blockquote>
+<p>Ember is a framework for creating <strong>ambitious</strong> web applications.</p>
+</blockquote>
+<p>There are lots of advanced usage for Ember, if there is anything weird, we can always refer Ember APIs documentation first.</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>Recently, QA reported two issues that which seems a little weird. After some investigations, I found they’re caused by my lack of knowledge of Ember Data APIs.</p>]]>
+    
+    </summary>
+    
+      <category term="ember" scheme="http://just4fun.github.io/hexo-blog/tags/ember/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[Flux vs Redux]]></title>

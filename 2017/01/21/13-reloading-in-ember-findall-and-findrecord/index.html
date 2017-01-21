@@ -1,0 +1,186 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>just4fun › Reloading in Ember findAll and findRecord</title>
+  <meta name="author" content="talent">
+  
+  <meta name="description" content="Recently, QA reported two issues that which seems a little weird. After some investigations, I found they’re caused by my lack of knowledge of Ember Data APIs.">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Reloading in Ember findAll and findRecord"/>
+  <meta property="og:site_name" content="just4fun"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/hexo-blog/favicon.ico" rel="shortcut icon" type="image/x-icon">
+  <link rel="alternate" href="/hexo-blog/atom.xml" title="just4fun" type="application/atom+xml">
+  <link rel="stylesheet" href="/hexo-blog/css/style.css" media="screen" type="text/css">
+  
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-59840825-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+</head>
+
+
+<body>
+  <header id="header"><div class="meta inner">
+  <h1><a href="/hexo-blog/">just4fun</a></h1>
+  <h2><a href="/hexo-blog/"></a></h2>
+  <nav id="main-nav">
+    <ul>
+      
+      <li><a href="/hexo-blog/archives">Archives</a></li>
+      
+      <li><a href="/hexo-blog/links">Links</a></li>
+      
+      <li><a href="/hexo-blog/about">About</a></li>
+      
+      <li><a href="/hexo-blog/atom.xml">Feed</a></li>
+      
+    </ul>
+    <div class="clearfix"></div>
+  </nav>
+</div>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  <div class="post-content">
+    <header>
+      
+  
+    <h1 class="title">Reloading in Ember findAll and findRecord</h1>
+  
+
+      
+      <time datetime="2017-01-21T09:46:08.000Z">Jan 21 2017</time>
+      
+    </header>
+    <div class="entry">
+      
+        <p>Recently, QA reported two issues that which seems a little weird. After some investigations, I found they’re caused by my lack of knowledge of Ember Data APIs.</p>
+<a id="more"></a>
+<h2 id="Background">Background</h2><ul>
+<li><strong>We always got old records in Ember Data even it seems we have already sent new request and got new records from API</strong></li>
+</ul>
+<p>In our application, there is a dropdown list at the top of screen which contains many <code>branches</code>. Once we select a new branch, we will send a request.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">didReceiveAttrs() &#123;</span><br><span class="line">  <span class="keyword">this</span>._super(...arguments);</span><br><span class="line">  <span class="keyword">this</span>.setupFilterGroups();</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">setupFilterGroups() &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  get(<span class="keyword">this</span>, <span class="string">'store'</span>).findAll(<span class="string">'zipcodeFilter'</span>).then(zipcodes =&gt; &#123;</span><br><span class="line">    <span class="comment">// we always got old `zipcodes` for last branch even we switched to a new branch</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>After I dug into <a href="http://emberjs.com/api/data/classes/DS.Store.html#method_findAll" target="_blank" rel="external">documentation</a> for <code>findAll</code>,</p>
+<blockquote>
+<p><code>findAll</code> asks the adapter’s <code>findAll</code> method to find the records for the given type, and returns a promise which will resolve with all records of this type present in the store, even if the adapter only returns a subset of them.</p>
+</blockquote>
+<p>In addition,</p>
+<blockquote>
+<p>When the returned promise resolves depends on the reload behavior, configured via the passed <code>options</code> hash and the result of the adapter’s <code>shouldReloadAll</code> method.</p>
+</blockquote>
+<p>There is also an example,</p>
+<blockquote>
+<p>If <code>{ reload: true }</code> is passed or <code>adapter.shouldReloadAll</code> evaluates to <code>true</code>, then the returned promise resolves once the adapter returns data, regardless if there are already records in the store:</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">store.push(&#123;</span><br><span class="line">  data: &#123;</span><br><span class="line">    id: <span class="string">'first'</span>,</span><br><span class="line">    type: <span class="string">'author'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// adapter#findAll resolves with</span></span><br><span class="line"><span class="comment">// [</span></span><br><span class="line"><span class="comment">//   &#123;</span></span><br><span class="line"><span class="comment">//     id: 'second',</span></span><br><span class="line"><span class="comment">//     type: 'author'</span></span><br><span class="line"><span class="comment">//   &#125;</span></span><br><span class="line"><span class="comment">// ]</span></span><br><span class="line"></span><br><span class="line">store.findAll(<span class="string">'author'</span>, &#123; reload: <span class="literal">true</span> &#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">authors</span>) </span>&#123;</span><br><span class="line">  authors.getEach(<span class="string">"id"</span>); <span class="comment">// ['first', 'second']</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>If no reload is indicated via the abovementioned ways, then the promise immediately resolves with all the records currently loaded in the store.</p>
+</blockquote>
+<p>That being said, without <code>reload: true</code>, <code>findAll</code> will always be resolved immediately if there are already records in the store, which will cause current issue.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">didReceiveAttrs() &#123;</span><br><span class="line">  <span class="keyword">this</span>._super(...arguments);</span><br><span class="line">  <span class="keyword">this</span>.setupFilterGroups();</span><br><span class="line">&#125;,</span><br><span class="line"></span><br><span class="line">setupFilterGroups() &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  get(<span class="keyword">this</span>, <span class="string">'store'</span>).findAll(<span class="string">'zipcodeFilter'</span>, &#123; reload: <span class="literal">true</span> &#125;).then(zipcodes =&gt; &#123;</span><br><span class="line">    <span class="comment">// it WORKS now, `zipcodes` will always be new records from API</span></span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>A button will always be enabled before all the requests it depends on resolved</strong></li>
+</ul>
+<p>There is a button in our application, we introduced <a href="http://ember-concurrency.com/" target="_blank" rel="external"><code>ember-concurrency</code></a> and bound <code>disabled=isProcessing</code> to it with three <code>task</code>s.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">createFollowup: task(<span class="function"><span class="keyword">function</span> *(<span class="params">followupStatus, followupDate</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;),</span><br><span class="line"></span><br><span class="line">clearFollowup: task(<span class="function"><span class="keyword">function</span> *(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;),</span><br><span class="line"></span><br><span class="line">createContactAttempt: task(<span class="function"><span class="keyword">function</span> *(<span class="params">subject, notes, contactStatus</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">this</span>.store.findRecord(<span class="string">'member'</span>, <span class="keyword">this</span>.get(<span class="string">'id'</span>));</span><br><span class="line">&#125;),</span><br><span class="line"></span><br><span class="line">isProcessing: Ember.computed.or(<span class="string">'createFollowup.isRunning'</span>, <span class="string">'clearFollowup.isRunning'</span>, <span class="string">'createContactAttempt.isRunning'</span>)</span><br></pre></td></tr></table></figure>
+<p>However, the button is still disabled before <code>createFollowup</code> and <code>clearFollowup</code> resolved, but it will be enabled once both of them finished without <code>createContactAttempt</code> being resolved.</p>
+<p>The root cause is same as previous case,</p>
+<blockquote>
+<p>If the record is not yet available, the store will ask the adapter’s <code>find</code> method to find the necessary data. If the record is already present in the store, it depends on the reload behavior <em>when</em> the returned promise resolves.</p>
+</blockquote>
+<p>That said, if there is no <code>reload: true</code>, <code>findRecord</code> will resolve the old value from Ember Data first, which will lead <code>createContactAttempt.isRunning</code> to be <code>false</code> even <code>member</code> is still being fetched.</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">createContactAttempt: task(<span class="function"><span class="keyword">function</span> *(<span class="params">subject, notes, contactStatus</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// it WORKS now, `createContactAttempt.isRunning` always be `true` before all `task`s resolved</span></span><br><span class="line">  <span class="keyword">yield</span> <span class="keyword">this</span>.store.findRecord(<span class="string">'member'</span>, <span class="keyword">this</span>.get(<span class="string">'id'</span>), &#123; reload: <span class="literal">true</span> &#125;);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="Conclusion">Conclusion</h2><p>Like the Ember official website mentioned,</p>
+<blockquote>
+<p>Ember is a framework for creating <strong>ambitious</strong> web applications.</p>
+</blockquote>
+<p>There are lots of advanced usage for Ember, if there is anything weird, we can always refer Ember APIs documentation first.</p>
+
+      
+    </div>
+    
+    <footer>
+      <div class="alignleft">
+      
+      
+  
+  <div class="tags">
+    <a href="/hexo-blog/tags/ember/">ember</a>
+  </div>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+    
+  </div>
+</article>
+
+
+<section id="comment">
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+
+</div></div>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer"><div class="inner"><div class="alignleft">
+  <p>
+  
+    &copy; 2017 talent
+  
+  </p>
+  <p>
+    <a href="http://github.com/willerce/hexo-theme-noderce">Noderce</a> Theme By <a href="http://willerce.com" >willerce</a>
+  </p>
+
+</div>
+<div class="clearfix"></div>
+
+<script src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+
+<span id="busuanzi_container_site_pv">
+  This site has been visited <strong><span id="busuanzi_value_site_pv"></span></strong> times,
+</span>
+<span id="busuanzi_container_site_uv">
+  and there has been a total of <strong><span id="busuanzi_value_site_uv"></span></strong> guests.
+</span>
+</div></footer>
+  <script type="text/javascript">
+
+var disqus_shortname = 'talent';
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+
+</script>
+
+</body>
+</html>
